@@ -1,8 +1,8 @@
-# Portal MySPD (Next.js) \u2014 Reka Bentuk Profesional
+# Portal MySPD (Next.js) \u2014 Reka Bentuk v3: Glassmorphism + Animasi Penuh
 
-Bina semula sepenuhnya teras Portal MySPD (login, portal utama, panel admin) guna **Next.js 14 (App Router) + TypeScript + Tailwind CSS (build version) + Supabase**, dengan reka bentuk UI baharu yang lebih profesional (bukan sekadar salin gaya lama).
+Bina semula sepenuhnya teras Portal MySPD (login, portal utama, panel admin) guna **Next.js 14 (App Router) + TypeScript + Tailwind CSS + Framer Motion + Supabase**.
 
-Data/logik daripada portal asal (HTML statik) digunakan sebagai **panduan fungsi sahaja** \u2014 semua UI dilukis semula dari awal mengikut sistem reka bentuk konsisten (warna, jarak, tipografi) supaya nampak seperti produk SaaS profesional, bukan portal jabatan biasa.
+UI diubah keseluruhan (bukan iterasi kecil daripada versi navy/sidebar sebelum ini) kepada gaya **glassmorphism moden** dengan latar gradient mesh animasi, navigasi atas (top nav) berbanding sidebar, dan animasi di hampir setiap interaksi.
 
 ## Setup
 
@@ -13,26 +13,24 @@ cp .env.local.example .env.local
 npm run dev
 ```
 
-Buka http://localhost:3000
+> `framer-motion` ditambah sebagai dependency baharu. Sandbox pembangunan (saya) tiada akses internet untuk `npm install` di sini, jadi ia belum diuji jalan sebenar \u2014 tapi ini pakej stabil & sangat popular, akan resolve normal semasa `npm install` anda (macam `next`/`react` yang dah berjaya sebelum ini di Vercel).
 
-## Reka bentuk baharu
+## Apa yang berubah (UI keseluruhan)
 
-- **Skrin log masuk**: reka bentuk dua panel \u2014 panel jenama (gradient navy + corak grid halus + statistik) di kiri, borang log masuk bersih di kanan.
-- **Portal utama**: susun atur sidebar + topbar gaya dashboard SaaS \u2014 kad statistik, grid modul, senarai pengumuman dan staf dalam talian.
-- **Panel Admin**: kad statistik pentadbiran, jadual pengguna, borang tambah pengguna, dan log audit bergaya timeline \u2014 semua dalam bingkai sidebar/topbar yang sama.
-- **Sistem warna & jarak konsisten**: token warna (accent biru, latar neutral, sokongan hijau/oren/merah untuk status), skala jarak 4\u201364px, sudut bulat 8\u201312px, bayang lembut \u2014 disokong mod gelap (`.dark`) melalui CSS variables di `app/globals.css`.
-- **Ikon SVG tersendiri** (`components/icons.tsx`) \u2014 tiada pek ikon luar diperlukan, mudah diselenggara offline.
+- **Log Masuk**: kad kaca (glassmorphism) terapung di atas latar gradient mesh 3 "blob" animasi + grid overlay halus. Kad dan medan borang masuk dengan animasi *stagger fade-up* berturutan.
+- **Navigasi**: tukar daripada sidebar kiri kepada **top nav** melengkung (pill navigation) dengan penunjuk aktif yang **meluncur** (`layoutId` Framer Motion) antara tab.
+- **Portal Utama**: kad statistik dengan **nombor mengira naik** (count-up) apabila muka surat dimuatkan, kad modul dengan kesan *hover lift*, semua elemen masuk dengan animasi *stagger fade-up*.
+- **Panel Admin**: senarai pengguna sebagai kad (bukan jadual), butang "Tambah Pengguna" membuka **drawer gelongsor** dari kanan (slide-over) dengan latar blur, skeleton loading semasa data dimuatkan.
+- **Toast**: animasi spring masuk/keluar (slide + scale).
+- **Modal** (Lupa Kata Laluan, Sunting Profil): animasi scale + fade masuk/keluar dengan backdrop blur.
+- **Tema gelap/terang**: ikon matahari/bulan bertukar dengan animasi putar + fade.
+- Semua animasi hormat keutamaan pengguna `prefers-reduced-motion` (`MotionConfig reducedMotion="user"` di peringkat root, serta CSS `@media (prefers-reduced-motion: reduce)` untuk animasi blob).
 
-## Apa yang diperbaiki berbanding portal asal
+## Apa yang KEKAL sama
 
-- Kunci Supabase dipindah ke `.env.local` (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) \u2014 bukan lagi hardcode dalam kod sumber.
-- Dasar kata laluan diseragamkan: minimum 8 aksara di semua tempat (reset password dan daftar pengguna baharu).
-- Tailwind CSS dibina (build), bukan CDN \u2014 lebih pantas dan sesuai produksi.
-- Struktur komponen React berasingan (bukan satu fail HTML 1794 baris).
-
-## Apa yang KEKAL sama (ikut pilihan semasa sesi ini)
-
-- Panggilan Supabase terus dari browser (client-side) untuk data portal dan panel admin \u2014 tiada API routes/server actions baharu ditambah.
+- Panggilan Supabase terus dari browser (client-side) untuk auth, data portal, dan panel admin.
+- Skop teras: login, portal utama, panel admin sahaja (modul lain macam chat/status feed belum dibina; pautan modul lain di top nav sengaja dinyahaktifkan).
+- Dasar kata laluan 8 aksara minimum di semua tempat.
 
 ## \u26a0\ufe0f Kelemahan keselamatan yang MASIH BELUM diselesaikan
 
@@ -40,31 +38,31 @@ Lihat nota keselamatan di bahagian atas `components/AdminView.tsx`. Ringkasnya:
 
 1. **Row Level Security (RLS)** bagi jadual `profiles`, `admin_audit`, dsb. mesti disemak/diketatkan di papan pemuka Supabase \u2014 semakan `role === "superadmin"` di React hanya mengawal PAPARAN, bukan capaian data sebenar.
 2. **Fungsi pelayan `create-user`** mesti sendiri sahkan JWT pemanggil ialah superadmin sebelum cipta akaun baharu dengan `role` yang diminta.
-3. Untuk sekatan sebenar peringkat server dalam Next.js sendiri, pindahkan operasi sensitif (tambah pengguna, tukar role, baca log audit) ke Route Handler / Server Action yang sahkan sesi di server sebelum panggil Supabase.
+3. Untuk sekatan sebenar peringkat server dalam Next.js sendiri, pindahkan operasi sensitif ke Route Handler / Server Action yang sahkan sesi di server sebelum panggil Supabase.
 
 ## Struktur fail
 
 ```
 app/
   layout.tsx          - root layout
-  page.tsx            - entry point (login / portal / recovery)
-  globals.css         - design tokens (CSS variables) + Tailwind directives
+  page.tsx            - entry point (splash / login / portal / recovery)
+  globals.css         - design tokens + kelas glass/blob
 components/
   icons.tsx           - set ikon SVG tersendiri
-  LoginScreen.tsx      - skrin log masuk (reka bentuk dua panel)
+  LoginScreen.tsx      - skrin log masuk (glass card + blob animasi)
   ForgotPasswordModal.tsx
   NewPasswordModal.tsx
-  Sidebar.tsx          - navigasi sidebar
-  Topbar.tsx           - topbar (carian, notifikasi, tema, profil)
-  DashboardView.tsx    - portal utama (statistik + modul + pengumuman)
-  AdminView.tsx        - panel admin (pengguna + log audit)
-  PortalShell.tsx      - orkestrasi shell (sidebar+topbar+view switching)
+  TopNav.tsx           - navigasi atas dengan sliding pill indicator
+  DashboardView.tsx    - portal utama (count-up stats, module grid animasi)
+  AdminView.tsx        - panel admin (user cards, drawer, skeleton loading)
+  PortalShell.tsx      - orkestrasi shell + page transition antara view
   ProfileModal.tsx
   ToastContainer.tsx
 hooks/
   useAuth.ts           - session, login/logout, profile fetch
   useTheme.ts          - mod gelap/terang
   useToasts.ts
+  useCountUp.ts        - animasi nombor mengira naik
 lib/
   supabaseClient.ts
   types.ts
