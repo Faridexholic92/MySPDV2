@@ -1,131 +1,165 @@
 "use client";
 
+import { motion } from "framer-motion";
 import type { AuthedUser } from "@/lib/types";
-import {
-	IconFile,
-	IconCalendar,
-	IconActivity,
-	IconGraduation,
-	IconCheckCircle,
-	IconEdit,
-	IconUsers,
-} from "@/components/icons";
+import { IconFile, IconCalendar, IconActivity } from "@/components/icons";
 
 const STATS = [
-	{ label: "Dokumen Rasmi", value: "128", trend: "+4", Icon: IconFile, tone: "accent" as const },
-	{ label: "Mesyuarat Minggu Ini", value: "3", Icon: IconCalendar, tone: "good" as const },
-	{ label: "Borang Belum Lengkap", value: "5", Icon: IconEdit, tone: "warn" as const },
-	{ label: "Staf Berdaftar", value: "19", Icon: IconUsers, tone: "neutral" as const },
+	{ label: "Dokumen Rasmi", value: "128", trend: "+4.2%", spark: "0,20 15,18 30,22 45,12 60,15 75,6 90,9 100,4", color: "#12A579" },
+	{ label: "Mesyuarat Minggu Ini", value: "3", trend: "+1", spark: "0,10 15,14 30,8 45,16 60,10 75,18 90,12 100,15", color: "#4F5DFF" },
+	{ label: "Borang Belum Lengkap", value: "5", trend: null, spark: "0,6 15,10 30,8 45,14 60,18 75,15 90,20 100,18", color: "#C87A0F" },
+	{ label: "Staf Berdaftar", value: "19", trend: null, spark: "0,15 15,15 30,12 45,12 60,10 75,10 90,8 100,8", color: "#6B6D76" },
+];
+
+const BARS = [
+	{ day: "Isn", h: 58 },
+	{ day: "Sel", h: 72 },
+	{ day: "Rab", h: 44 },
+	{ day: "Kha", h: 92, hi: true },
+	{ day: "Jum", h: 66 },
+	{ day: "Sab", h: 20 },
+	{ day: "Ahd", h: 12 },
 ];
 
 const MODULES = [
-	{ label: "Portal Dokumen Rasmi", desc: "Akses SOP, manual kerja dan minit mesyuarat seksyen.", Icon: IconFile },
-	{ label: "Agenda MySPD", desc: "Jadual dan agenda mesyuarat akan datang.", Icon: IconCalendar },
-	{ label: "Status Operasi", desc: "Pantau prestasi dan status operasi harian.", Icon: IconActivity },
-	{ label: "Status Kursus", desc: "Rekod dan status kursus latihan staf.", Icon: IconGraduation },
-	{ label: "EKSA MySPD", desc: "Polisi, objektif dan galeri aktiviti EKSA.", Icon: IconCheckCircle },
-	{ label: "Borang 4 Jam", desc: "Hantar dan jejak borang tugasan 4 jam.", Icon: IconEdit },
+	{ label: "Dokumen Rasmi", desc: "SOP & manual kerja", Icon: IconFile },
+	{ label: "Agenda", desc: "Mesyuarat akan datang", Icon: IconCalendar },
+	{ label: "Status Operasi", desc: "Prestasi harian", Icon: IconActivity },
 ];
 
 const ANNOUNCEMENTS = [
-	{ dot: "bg-accent", title: "SOP baharu dimuat naik", meta: "SOP Operasi Lapangan v3 \u00b7 2 jam lalu" },
-	{ dot: "bg-good", title: "Minit mesyuarat Jun disiarkan", meta: "Minit Mesyuarat Seksyen \u00b7 semalam" },
-	{ dot: "bg-warn", title: "Peringatan: borang 4 jam", meta: "5 staf belum hantar borang bulan ini" },
+	{ title: "SOP baharu dimuat naik", meta: "2 jam lalu" },
+	{ title: "Minit mesyuarat Jun disiarkan", meta: "Semalam" },
+	{ title: "5 staf belum hantar borang", meta: "2 hari lalu" },
 ];
 
-const toneClasses: Record<string, string> = {
-	accent: "bg-accent-soft text-accent",
-	good: "bg-good-soft text-good",
-	warn: "bg-warn-soft text-warn",
-	neutral: "bg-surface-2 text-secondary",
-};
+const fadeUpHidden = { opacity: 0, y: 14 };
+const fadeUpShow = { opacity: 1, y: 0 };
+const easeCurve = [0.16, 1, 0.3, 1] as const;
+
+function useDelay(seconds: number) {
+	return { duration: 0.4, delay: seconds, ease: easeCurve };
+}
+
+const barInitial = { height: "0%" };
+function useBarTransition(seconds: number) {
+	return { duration: 0.6, delay: seconds, ease: easeCurve };
+}
 
 export function DashboardView({ user }: { user: AuthedUser }) {
 	const firstName = (user.name || "").split(" ")[0] || user.name;
 
 	return (
-		<div className="mx-auto max-w-[1120px] px-7 py-8">
-			<h1 className="mb-1 text-[22px] font-extrabold tracking-tight">Selamat kembali, {firstName}.</h1>
-			<p className="mb-7 text-[13.5px] text-secondary">Berikut ringkasan aktiviti seksyen anda hari ini.</p>
+		<div className="mx-auto max-w-[1180px] px-7 py-7">
+			<motion.div
+				initial={fadeUpHidden}
+				animate={fadeUpShow}
+				transition={useDelay(0)}
+				className="mb-5"
+			>
+				<h1 className="mb-0.5 text-[21px] font-extrabold tracking-tight">Selamat kembali, {firstName}.</h1>
+				<p className="text-[12.5px] text-secondary">Jumaat, 3 Julai 2026</p>
+			</motion.div>
 
-			<div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-				{STATS.map((s) => (
-					<div key={s.label} className="rounded-lg border border-border bg-canvas p-4.5">
-						<div className="mb-3.5 flex items-center justify-between">
-							<div className={`flex h-8 w-8 items-center justify-center rounded-lg ${toneClasses[s.tone]}`}>
-								<s.Icon className="h-4 w-4" />
-							</div>
+			<div className="mb-6 grid grid-cols-2 gap-3.5 lg:grid-cols-4">
+				{STATS.map((s, i) => (
+					<motion.div
+						key={s.label}
+						initial={fadeUpHidden}
+						animate={fadeUpShow}
+						transition={useDelay(0.06 + i * 0.05)}
+						className="rounded-lg border border-border bg-canvas p-4 shadow-sm"
+					>
+						<div className="mb-1.5 flex items-center justify-between">
+							<span className="text-[11.5px] font-semibold text-secondary">{s.label}</span>
 							{s.trend && (
-								<span className="rounded-full bg-good-soft px-1.5 py-0.5 text-[11px] font-bold text-good">
+								<span className="rounded-full bg-good-soft px-1.5 py-0.5 text-[10.5px] font-extrabold text-good">
 									{s.trend}
 								</span>
 							)}
 						</div>
-						<b className="block text-2xl font-extrabold">{s.value}</b>
-						<span className="text-xs text-secondary">{s.label}</span>
-					</div>
+						<b className="mb-2 block text-[23px] font-extrabold tracking-tight">{s.value}</b>
+						<svg width="100%" height="28" viewBox="0 0 100 28" preserveAspectRatio="none">
+							<polyline points={s.spark} fill="none" stroke={s.color} strokeWidth="2" />
+						</svg>
+					</motion.div>
 				))}
 			</div>
 
-			<div className="mb-3.5 flex items-center justify-between">
-				<h2 className="text-[14.5px] font-extrabold">Modul Portal</h2>
-			</div>
-			<div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-				{MODULES.map((m) => (
-					<div
-						key={m.label}
-						className="rounded-lg border border-border bg-canvas p-4.5 transition hover:-translate-y-0.5 hover:shadow-card"
-					>
-						<div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-accent-soft text-accent">
-							<m.Icon className="h-[18px] w-[18px]" />
+			<div className="mb-5 grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr]">
+				<motion.div
+					initial={fadeUpHidden}
+					animate={fadeUpShow}
+					transition={useDelay(0.3)}
+					className="rounded-lg border border-border bg-canvas p-5 shadow-sm"
+				>
+					<div className="mb-4 flex items-center justify-between">
+						<h2 className="text-[13.5px] font-extrabold">Aktiviti Dokumen (7 Hari)</h2>
+						<div className="flex gap-1 rounded-lg bg-surface p-1">
+							<span className="rounded-md bg-canvas px-2.5 py-1 text-[11px] font-bold shadow-sm">Minggu</span>
+							<span className="px-2.5 py-1 text-[11px] font-bold text-secondary">Bulan</span>
 						</div>
-						<h3 className="mb-1 text-[13.5px] font-bold">{m.label}</h3>
-						<p className="text-xs leading-relaxed text-secondary">{m.desc}</p>
 					</div>
-				))}
-			</div>
+					<div className="flex h-[150px] items-stretch gap-2.5 px-1">
+						{BARS.map((b, i) => (
+							<div key={b.day} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
+								<motion.div
+									initial={barInitial}
+									animate={{ height: `${b.h}%` }}
+									transition={useBarTransition(0.35 + i * 0.05)}
+									className={`w-full rounded-t-[5px] rounded-b-[2px] ${b.hi ? "bg-accent" : "bg-accent-soft"}`}
+								/>
+								<span className="text-[10px] font-semibold text-secondary">{b.day}</span>
+							</div>
+						))}
+					</div>
+				</motion.div>
 
-			<div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.4fr_1fr]">
-				<div className="rounded-lg border border-border bg-canvas p-4.5">
-					<div className="mb-3 flex items-center justify-between">
-						<h2 className="text-[14.5px] font-extrabold">Pengumuman Terkini</h2>
-					</div>
+				<motion.div
+					initial={fadeUpHidden}
+					animate={fadeUpShow}
+					transition={useDelay(0.35)}
+					className="rounded-lg border border-border bg-canvas p-5 shadow-sm"
+				>
+					<h2 className="mb-3 text-[13.5px] font-extrabold">Pengumuman Terkini</h2>
 					{ANNOUNCEMENTS.map((a, i) => (
 						<div
 							key={i}
-							className={`flex gap-3 py-2.5 ${i < ANNOUNCEMENTS.length - 1 ? "border-b border-border" : ""}`}
+							className={`py-2.5 ${i < ANNOUNCEMENTS.length - 1 ? "border-b border-border" : ""}`}
 						>
-							<span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${a.dot}`} />
-							<div>
-								<b className="block text-[13px] font-bold">{a.title}</b>
-								<span className="text-[11.5px] text-secondary">{a.meta}</span>
-							</div>
+							<b className="block text-[12.5px] font-bold">{a.title}</b>
+							<span className="text-[11px] text-secondary">{a.meta}</span>
 						</div>
 					))}
-				</div>
+				</motion.div>
+			</div>
 
-				<div className="rounded-lg border border-border bg-canvas p-4.5">
-					<h2 className="mb-3 text-[14.5px] font-extrabold">Staf Dalam Talian</h2>
-					{[
-						["Nurul Ain", "Penolong Pegawai"],
-						["Khairul Hafiz", "Juruukur"],
-						["Siti Maisarah", "Kerani"],
-					].map(([name, role], i, arr) => (
-						<div key={name} className={`flex items-center gap-2.5 py-2.5 ${i < arr.length - 1 ? "border-b border-border" : ""}`}>
-							<div className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-2 text-[10.5px] font-bold text-secondary">
-								{name
-									.split(" ")
-									.map((s) => s[0])
-									.slice(0, 2)
-									.join("")}
-							</div>
-							<div>
-								<b className="block text-[13px] font-bold">{name}</b>
-								<span className="text-[11.5px] text-secondary">{role}</span>
-							</div>
+			<motion.h2
+				initial={fadeUpHidden}
+				animate={fadeUpShow}
+				transition={useDelay(0.4)}
+				className="mb-3 text-[13.5px] font-extrabold"
+			>
+				Modul Portal
+			</motion.h2>
+			<div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+				{MODULES.map((m, i) => (
+					<motion.div
+						key={m.label}
+						initial={fadeUpHidden}
+						animate={fadeUpShow}
+						transition={useDelay(0.44 + i * 0.04)}
+						className="flex items-center gap-3 rounded-lg border border-border bg-canvas p-3.5 shadow-sm"
+					>
+						<div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[9px] bg-surface text-primary">
+							<m.Icon className="h-4 w-4" />
 						</div>
-					))}
-				</div>
+						<div>
+							<h3 className="text-[12.5px] font-bold">{m.label}</h3>
+							<p className="text-[11px] text-secondary">{m.desc}</p>
+						</div>
+					</motion.div>
+				))}
 			</div>
 		</div>
 	);

@@ -3,37 +3,45 @@
 @tailwind utilities;
 
 :root {
+	--ink: #0b0c0e;
+	--ink-2: #141519;
+	--line-dark: rgba(255, 255, 255, 0.08);
+	--text-dark-primary: #f5f6f7;
+	--text-dark-secondary: rgba(245, 246, 247, 0.52);
+
 	--canvas: #ffffff;
-	--surface: #f9f8f7;
-	--surface-2: #f0efed;
-	--border: #e6e5e3;
-	--text-primary: #2c2c2b;
-	--text-secondary: #7d7a75;
-	--accent: #2783de;
-	--accent-soft: #e5f2fc;
-	--good: #46a171;
-	--good-soft: #e8f1ec;
-	--warn: #d5803b;
-	--warn-soft: #fbebde;
-	--risk: #e56458;
-	--risk-soft: #fce9e7;
+	--surface: #f7f7f8;
+	--surface-2: #f0f0f2;
+	--border: #e7e7ea;
+	--text-primary: #101114;
+	--text-secondary: #6b6d76;
+
+	--accent: #4f5dff;
+	--accent-2: #7c8aff;
+	--accent-soft: #eef0ff;
+	--good: #12a579;
+	--good-soft: #e4f7f1;
+	--warn: #c87a0f;
+	--warn-soft: #fbf0df;
+	--risk: #e5484d;
+	--risk-soft: #fdecec;
 }
 
 .dark {
-	--canvas: #191919;
-	--surface: #202020;
-	--surface-2: #383836;
-	--border: rgba(255, 255, 255, 0.2);
-	--text-primary: #ffffff;
-	--text-secondary: rgba(255, 255, 255, 0.65);
-	--accent: #5e9fe8;
-	--accent-soft: rgba(94, 159, 232, 0.12);
-	--good: #72bc8f;
-	--good-soft: rgba(114, 188, 143, 0.12);
-	--warn: #de9255;
-	--warn-soft: rgba(222, 146, 85, 0.12);
-	--risk: #e97366;
-	--risk-soft: rgba(233, 115, 102, 0.12);
+	--canvas: #17181c;
+	--surface: #1c1d22;
+	--surface-2: #24262c;
+	--border: rgba(255, 255, 255, 0.09);
+	--text-primary: #f5f6f7;
+	--text-secondary: rgba(245, 246, 247, 0.55);
+	--accent: #7c8aff;
+	--accent-soft: rgba(124, 138, 255, 0.14);
+	--good: #3ecf9a;
+	--good-soft: rgba(62, 207, 154, 0.12);
+	--warn: #e2a23b;
+	--warn-soft: rgba(226, 162, 59, 0.12);
+	--risk: #f0656a;
+	--risk-soft: rgba(240, 101, 106, 0.12);
 }
 
 html,
@@ -42,6 +50,7 @@ body {
 	margin: 0;
 	background: var(--surface);
 	color: var(--text-primary);
+	letter-spacing: -0.005em;
 }
 
 * {
@@ -49,13 +58,24 @@ body {
 }
 
 .icon {
-	width: 18px;
-	height: 18px;
+	width: 16px;
+	height: 16px;
 	stroke: currentColor;
 	fill: none;
-	stroke-width: 1.8;
+	stroke-width: 1.7;
 	stroke-linecap: round;
 	stroke-linejoin: round;
 	display: block;
 	flex-shrink: 0;
+}
+
+@keyframes fadeUp {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }

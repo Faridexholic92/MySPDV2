@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import type { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { useToasts } from "@/hooks/useToasts";
@@ -11,6 +12,11 @@ import { Topbar } from "@/components/Topbar";
 import { DashboardView } from "@/components/DashboardView";
 import { AdminView } from "@/components/AdminView";
 import type { AuthedUser } from "@/lib/types";
+
+const viewInitial = { opacity: 0, y: 8 };
+const viewAnimate = { opacity: 1, y: 0 };
+const viewExit = { opacity: 0, y: -8 };
+const viewTransition = { duration: 0.2, ease: [0.16, 1, 0.3, 1] as const };
 
 export function PortalShell({ auth, user }: { auth: ReturnType<typeof useAuth>; user: AuthedUser }) {
 	const { theme, toggleTheme } = useTheme();
@@ -33,19 +39,25 @@ export function PortalShell({ auth, user }: { auth: ReturnType<typeof useAuth>; 
 					theme={theme}
 					onToggleTheme={toggleTheme}
 					onOpenProfile={() => setProfileOpen(true)}
-					title={effectiveView === "admin" ? "Panel Admin" : undefined}
+					title={effectiveView === "admin" ? { crumb: "Pentadbiran", active: "Pengurusan Pengguna" } : undefined}
 				/>
 
-				{effectiveView === "admin" ? (
-					<AdminView auth={auth} showToast={showToast} />
-				) : (
-					<DashboardView user={user} />
-				)}
+				<AnimatePresence mode="wait">
+					<motion.div key={effectiveView} initial={viewInitial} animate={viewAnimate} exit={viewExit} transition={viewTransition}>
+						{effectiveView === "admin" ? (
+							<AdminView auth={auth} showToast={showToast} />
+						) : (
+							<DashboardView user={user} />
+						)}
+					</motion.div>
+				</AnimatePresence>
 			</div>
 
-			{profileOpen && (
-				<ProfileModal auth={auth} user={user} onClose={() => setProfileOpen(false)} showToast={showToast} />
-			)}
+			<AnimatePresence>
+				{profileOpen && (
+					<ProfileModal auth={auth} user={user} onClose={() => setProfileOpen(false)} showToast={showToast} />
+				)}
+			</AnimatePresence>
 
 			<ToastContainer toasts={toasts} />
 		</div>

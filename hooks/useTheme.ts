@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 
 export function useTheme() {
-	// Default theme is light to match the new professional design system.
 	const [theme, setThemeState] = useState<"dark" | "light">("light");
 
 	useEffect(() => {

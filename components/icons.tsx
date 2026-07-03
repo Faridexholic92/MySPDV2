@@ -1,5 +1,3 @@
-// Minimal inline SVG icon set (no external icon package required).
-// Matches the stroke style defined in app/globals.css (.icon).
 "use client";
 
 import type { SVGProps } from "react";
@@ -157,6 +155,12 @@ export const IconAlertCircle = (p: IconProps) => (
 	</Base>
 );
 
+export const IconCheck = (p: IconProps) => (
+	<Base {...p}>
+		<path d="m5 13 4 4L19 7" />
+	</Base>
+);
+
 export const IconLogOut = (p: IconProps) => (
 	<Base {...p}>
 		<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -168,12 +172,6 @@ export const IconLogOut = (p: IconProps) => (
 export const IconX = (p: IconProps) => (
 	<Base {...p}>
 		<path d="M18 6 6 18M6 6l12 12" />
-	</Base>
-);
-
-export const IconTrash = (p: IconProps) => (
-	<Base {...p}>
-		<path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V6" />
 	</Base>
 );
 

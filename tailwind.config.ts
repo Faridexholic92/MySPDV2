@@ -6,6 +6,8 @@ const config: Config = {
 	theme: {
 		extend: {
 			colors: {
+				ink: "var(--ink)",
+				"ink-2": "var(--ink-2)",
 				canvas: "var(--canvas)",
 				surface: "var(--surface)",
 				"surface-2": "var(--surface-2)",
@@ -23,10 +25,11 @@ const config: Config = {
 			},
 			borderRadius: {
 				DEFAULT: "8px",
-				lg: "12px",
+				lg: "14px",
 			},
 			boxShadow: {
-				card: "0 1px 2px rgba(0,0,0,.05), 0 4px 12px rgba(0,0,0,.04)",
+				sm: "0 1px 2px rgba(16,17,20,.04), 0 1px 1px rgba(16,17,20,.03)",
+				card: "0 4px 16px rgba(16,17,20,.06), 0 1px 2px rgba(16,17,20,.04)",
 			},
 		},
 	},

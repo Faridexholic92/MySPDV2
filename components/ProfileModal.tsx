@@ -1,9 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import type { useAuth } from "@/hooks/useAuth";
 import type { AuthedUser } from "@/lib/types";
 import { IconX } from "@/components/icons";
+
+const backdropInitial = { opacity: 0 };
+const backdropAnimate = { opacity: 1 };
+const cardInitial = { opacity: 0, scale: 0.97, y: 10 };
+const cardAnimate = { opacity: 1, scale: 1, y: 0 };
+const cardExit = { opacity: 0, scale: 0.98, y: 6 };
+const cardTransition = { duration: 0.25, ease: [0.16, 1, 0.3, 1] as const };
 
 export function ProfileModal({
 	auth,
@@ -31,8 +39,6 @@ export function ProfileModal({
 		}
 		setBusy(true);
 		try {
-			// Kekal guna RPC sedia ada di Supabase (update_my_profile) - server
-			// tetap sahkan pengguna hanya boleh kemaskini profil sendiri melalui RLS.
 			const { error } = await auth.sb.rpc("update_my_profile", {
 				p_nama: nama.trim(),
 				p_jawatan: jawatan.trim(),
@@ -59,16 +65,23 @@ export function ProfileModal({
 	];
 
 	return (
-		<div
+		<motion.div
+			initial={backdropInitial}
+			animate={backdropAnimate}
+			exit={backdropInitial}
 			className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
 			onClick={onClose}
 		>
-			<div
-				className="w-full max-w-md rounded-lg border border-border bg-canvas p-6 shadow-card"
+			<motion.div
+				initial={cardInitial}
+				animate={cardAnimate}
+				exit={cardExit}
+				transition={cardTransition}
+				className="w-full max-w-md rounded-2xl border border-border bg-canvas p-6 shadow-card"
 				onClick={(e) => e.stopPropagation()}
 			>
 				<div className="mb-4 flex items-center justify-between">
-					<h2 className="text-sm font-bold">Sunting Profil</h2>
+					<h2 className="text-sm font-extrabold">Sunting Profil</h2>
 					<button onClick={onClose} className="text-secondary" aria-label="Tutup">
 						<IconX className="h-4 w-4" />
 					</button>
@@ -76,17 +89,17 @@ export function ProfileModal({
 				<div className="space-y-3">
 					{fields.map(([label, value, setter]) => (
 						<div key={label}>
-							<label className="mb-1.5 block text-[12.5px] font-semibold">{label}</label>
+							<label className="mb-1.5 block text-[12.5px] font-bold">{label}</label>
 							<input
 								value={value}
 								onChange={(e) => setter(e.target.value)}
-								className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-accent focus:ring-4 focus:ring-accent-soft"
+								className="w-full rounded-[9px] border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-accent focus:ring-[3.5px] focus:ring-accent-soft"
 							/>
 						</div>
 					))}
 				</div>
 				{msg && (
-					<div className="mt-3 rounded-lg border border-risk/30 bg-risk-soft px-3 py-2 text-xs text-risk">
+					<div className="mt-3 rounded-[9px] border border-risk/30 bg-risk-soft px-3 py-2 text-xs text-risk">
 						{msg.text}
 					</div>
 				)}
@@ -97,12 +110,12 @@ export function ProfileModal({
 					<button
 						onClick={save}
 						disabled={busy}
-						className="rounded-lg bg-accent px-4 py-2 text-xs font-bold text-white disabled:opacity-60"
+						className="rounded-[9px] bg-ink px-4 py-2 text-xs font-bold text-white disabled:opacity-60"
 					>
 						{busy ? "Menyimpan..." : "Simpan"}
 					</button>
 				</div>
-			</div>
-		</div>
+			</motion.div>
+		</motion.div>
 	);
 }

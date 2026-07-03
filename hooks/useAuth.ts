@@ -39,7 +39,6 @@ export function useAuth() {
 				.eq("id", authUser.id)
 				.single();
 
-			// Force logout if an admin bumped this user's session_version (remote sign-out).
 			const svKey = `myspd.sv.${authUser.id}`;
 			const known = localStorage.getItem(svKey);
 			const cur = String(profile?.session_version ?? 1);
@@ -105,7 +104,6 @@ export function useAuth() {
 			}
 		});
 
-		// Also check current session on first load.
 		sb.auth.getSession().then(({ data }) => {
 			if (data.session?.user) void handleUser(data.session.user);
 			else if (status === "loading") setStatus("loggedOut");
