@@ -47,7 +47,7 @@ export function PortalShell({ auth, user }: { auth: ReturnType<typeof useAuth>; 
 						{effectiveView === "admin" ? (
 							<AdminView auth={auth} showToast={showToast} />
 						) : (
-							<DashboardView user={user} />
+							<DashboardView user={user} auth={auth} />
 						)}
 					</motion.div>
 				</AnimatePresence>

@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import type { useAuth } from "@/hooks/useAuth";
 import type { AuthedUser } from "@/lib/types";
 import {
 	IconActivity,
@@ -12,24 +14,9 @@ import {
 	IconClipboard,
 	IconClock,
 	IconSatellite,
+	IconUsers,
+	IconBell,
 } from "@/components/icons";
-
-const STATS = [
-	{ label: "Dokumen Rasmi", value: "128", trend: "+4.2%", spark: "0,20 15,18 30,22 45,12 60,15 75,6 90,9 100,4", color: "#12A579" },
-	{ label: "Mesyuarat Minggu Ini", value: "3", trend: "+1", spark: "0,10 15,14 30,8 45,16 60,10 75,18 90,12 100,15", color: "#4F5DFF" },
-	{ label: "Borang Belum Lengkap", value: "5", trend: null, spark: "0,6 15,10 30,8 45,14 60,18 75,15 90,20 100,18", color: "#C87A0F" },
-	{ label: "Staf Berdaftar", value: "19", trend: null, spark: "0,15 15,15 30,12 45,12 60,10 75,10 90,8 100,8", color: "#6B6D76" },
-];
-
-const BARS = [
-	{ day: "Isn", h: 58 },
-	{ day: "Sel", h: 72 },
-	{ day: "Rab", h: 44 },
-	{ day: "Kha", h: 92, hi: true },
-	{ day: "Jum", h: 66 },
-	{ day: "Sab", h: 20 },
-	{ day: "Ahd", h: 12 },
-];
 
 // Modul & penerangan sebenar diambil terus daripada grid "Modul Utama"
 // portal asal (index.html) supaya konsisten dengan sistem sedia ada.
@@ -45,36 +32,124 @@ const MODULES = [
 	{ label: "Status Operasi", desc: "Perhubungan & keberadaan.", Icon: IconSatellite },
 ];
 
-const ANNOUNCEMENTS = [
-	{ title: "SOP baharu dimuat naik", meta: "2 jam lalu" },
-	{ title: "Minit mesyuarat Jun disiarkan", meta: "Semalam" },
-	{ title: "5 staf belum hantar borang", meta: "2 hari lalu" },
+const TK_MON = [
+	"Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogos", "Sep", "Okt", "Nov", "Dis",
 ];
+
+type Pengumuman = { tajuk: string; tarikh: string | null; jenis: string | null; status: string | null };
+type Birthday = { nama: string; day: number; month: number };
 
 const fadeUpHidden = { opacity: 0, y: 14 };
 const fadeUpShow = { opacity: 1, y: 0 };
 const easeCurve = [0.16, 1, 0.3, 1] as const;
+const skeletonPulse = "animate-pulse rounded bg-surface-2";
 
 function useDelay(seconds: number) {
 	return { duration: 0.4, delay: seconds, ease: easeCurve };
 }
 
-const barInitial = { height: "0%" };
-function useBarTransition(seconds: number) {
-	return { duration: 0.6, delay: seconds, ease: easeCurve };
+function formatTarikh(t: string | null): string {
+	if (!t) return "";
+	try {
+		const d = new Date(t);
+		if (isNaN(d.getTime())) return t;
+		return `${d.getDate()} ${TK_MON[d.getMonth()]} ${d.getFullYear()}`;
+	} catch {
+		return t;
+	}
 }
 
-export function DashboardView({ user }: { user: AuthedUser }) {
+// NOTE (data): Statistik dan pengumuman di bawah ditarik terus dari jadual
+// Supabase sedia ada dalam portal asal (skt_lembar, bdr, profiles,
+// pengumuman) -- bukan lagi angka rekaan. Kalau jadual ini tiada/RLS
+// menyekat, kad akan papar "\u2014" (sama macam gelagat portal asal).
+export function DashboardView({ user, auth }: { user: AuthedUser; auth: ReturnType<typeof useAuth> }) {
 	const firstName = (user.name || "").split(" ")[0] || user.name;
+	const [loading, setLoading] = useState(true);
+	const [statSpd, setStatSpd] = useState<number | null>(null);
+	const [statBdr, setStatBdr] = useState<number | null>(null);
+	const [statJumlah, setStatJumlah] = useState<number | null>(null);
+	const [pengumuman, setPengumuman] = useState<Pengumuman[]>([]);
+	const [birthdays, setBirthdays] = useState<Birthday[]>([]);
+
+	useEffect(() => {
+		(async () => {
+			setLoading(true);
+			const sb = auth.sb;
+
+			try {
+				const r = await sb.from("skt_lembar").select("*", { count: "exact", head: true });
+				setStatSpd(typeof r.count === "number" ? r.count : null);
+			} catch {
+				setStatSpd(null);
+			}
+			try {
+				const r = await sb.from("bdr").select("*", { count: "exact", head: true }).eq("menolak_bdr", false).gt("jarak", 8);
+				setStatBdr(typeof r.count === "number" ? r.count : null);
+			} catch {
+				setStatBdr(null);
+			}
+			try {
+				const r = await sb.from("profiles").select("*", { count: "exact", head: true });
+				setStatJumlah(typeof r.count === "number" ? r.count : null);
+			} catch {
+				setStatJumlah(null);
+			}
+			try {
+				const r = await sb.from("pengumuman").select("*").order("tarikh", { ascending: false }).limit(5);
+				if (!r.error && r.data) setPengumuman(r.data as Pengumuman[]);
+			} catch {
+				/* ignore */
+			}
+			try {
+				const r = await sb.from("profiles").select("nama,tarikh_lahir").not("tarikh_lahir", "is", null);
+				if (!r.error && r.data) {
+					const now = new Date();
+					const mon = now.getMonth() + 1;
+					const list = (r.data as Array<{ nama: string; tarikh_lahir: string }>)
+						.map((p) => {
+							const d = new Date(p.tarikh_lahir);
+							if (isNaN(d.getTime())) return null;
+							return { nama: p.nama, month: d.getMonth() + 1, day: d.getDate() };
+						})
+						.filter((x): x is Birthday => !!x && x.month === mon)
+						.sort((a, b) => a.day - b.day);
+					setBirthdays(list);
+				}
+			} catch {
+				/* ignore */
+			}
+
+			setLoading(false);
+		})();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	const fmt = (n: number | null) => (n == null ? "\u2014" : String(n));
+	const today = new Date();
+
+	const STATS = [
+		{ label: "Status SPD", value: fmt(statSpd), sub: "Lembar SKT Seksyen", Icon: IconActivity, tone: "accent" as const },
+		{ label: "Status BDR", value: fmt(statBdr), sub: "Layak BDR (>8km)", Icon: IconClipboard, tone: "warn" as const },
+		{ label: "Jumlah Pengguna", value: fmt(statJumlah), sub: "Keseluruhan", Icon: IconUsers, tone: "good" as const },
+	];
+
+	const toneClasses: Record<string, string> = {
+		accent: "bg-accent-soft text-accent",
+		good: "bg-good-soft text-good",
+		warn: "bg-warn-soft text-warn",
+	};
 
 	return (
 		<div className="mx-auto flex min-h-[calc(100vh-56px)] max-w-[1180px] flex-col px-7 py-7">
 			<motion.div initial={fadeUpHidden} animate={fadeUpShow} transition={useDelay(0)} className="mb-5">
 				<h1 className="mb-0.5 text-[21px] font-extrabold tracking-tight">Selamat kembali, {firstName}.</h1>
-				<p className="text-[12.5px] text-secondary">Jumaat, 3 Julai 2026</p>
+				<p className="text-[12.5px] text-secondary">
+					{today.toLocaleDateString("ms-MY", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+				</p>
 			</motion.div>
 
-			<div className="mb-6 grid grid-cols-2 gap-3.5 lg:grid-cols-4">
+			<div className="mb-6 grid grid-cols-1 gap-3.5 sm:grid-cols-3">
 				{STATS.map((s, i) => (
 					<motion.div
 						key={s.label}
@@ -83,71 +158,92 @@ export function DashboardView({ user }: { user: AuthedUser }) {
 						transition={useDelay(0.06 + i * 0.05)}
 						className="rounded-lg border border-border bg-canvas p-4 shadow-sm"
 					>
-						<div className="mb-1.5 flex items-center justify-between">
-							<span className="text-[11.5px] font-semibold text-secondary">{s.label}</span>
-							{s.trend && (
-								<span className="rounded-full bg-good-soft px-1.5 py-0.5 text-[10.5px] font-extrabold text-good">
-									{s.trend}
-								</span>
-							)}
+						<div className="mb-2 flex items-center justify-between">
+							<span className="text-[11px] font-bold uppercase tracking-wide text-secondary">{s.label}</span>
+							<div className={`flex h-7 w-7 items-center justify-center rounded-md ${toneClasses[s.tone]}`}>
+								<s.Icon className="h-3.5 w-3.5" />
+							</div>
 						</div>
-						<b className="mb-2 block text-[23px] font-extrabold tracking-tight">{s.value}</b>
-						<svg width="100%" height="28" viewBox="0 0 100 28" preserveAspectRatio="none">
-							<polyline points={s.spark} fill="none" stroke={s.color} strokeWidth="2" />
-						</svg>
+						{loading ? (
+							<div className={`h-7 w-14 ${skeletonPulse}`} />
+						) : (
+							<b className="block text-[23px] font-extrabold tracking-tight">{s.value}</b>
+						)}
+						<span className="text-[11px] text-secondary">{s.sub}</span>
 					</motion.div>
 				))}
 			</div>
 
-			<div className="mb-5 grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr]">
+			<div className="mb-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
+				<motion.div
+					initial={fadeUpHidden}
+					animate={fadeUpShow}
+					transition={useDelay(0.24)}
+					className="rounded-lg border border-border bg-canvas p-5 shadow-sm"
+				>
+					<h2 className="mb-3 flex items-center gap-2 text-[13.5px] font-extrabold">
+						<IconBell className="h-3.5 w-3.5 text-secondary" />
+						Pengumuman Terkini
+					</h2>
+					{loading ? (
+						<div className="space-y-2">
+							{[0, 1, 2].map((i) => (
+								<div key={i} className={`h-10 ${skeletonPulse}`} />
+							))}
+						</div>
+					) : pengumuman.length === 0 ? (
+						<div className="py-6 text-center text-xs text-secondary">Tiada pengumuman.</div>
+					) : (
+						pengumuman.map((p, i) => (
+							<div key={i} className={`py-2.5 ${i < pengumuman.length - 1 ? "border-b border-border" : ""}`}>
+								<b className="block text-[12.5px] font-bold">{p.tajuk || "-"}</b>
+								<span className="text-[11px] text-secondary">
+									{formatTarikh(p.tarikh)}
+									{p.status ? ` \u2022 ${p.status}` : ""}
+								</span>
+							</div>
+						))
+					)}
+				</motion.div>
+
 				<motion.div
 					initial={fadeUpHidden}
 					animate={fadeUpShow}
 					transition={useDelay(0.3)}
 					className="rounded-lg border border-border bg-canvas p-5 shadow-sm"
 				>
-					<div className="mb-4 flex items-center justify-between">
-						<h2 className="text-[13.5px] font-extrabold">Aktiviti Dokumen (7 Hari)</h2>
-						<div className="flex gap-1 rounded-lg bg-surface p-1">
-							<span className="rounded-md bg-canvas px-2.5 py-1 text-[11px] font-bold shadow-sm">Minggu</span>
-							<span className="px-2.5 py-1 text-[11px] font-bold text-secondary">Bulan</span>
+					<h2 className="mb-3 text-[13.5px] font-extrabold">Hari Lahir Bulan Ini</h2>
+					{loading ? (
+						<div className="space-y-2">
+							{[0, 1].map((i) => (
+								<div key={i} className={`h-8 ${skeletonPulse}`} />
+							))}
 						</div>
-					</div>
-					<div className="flex h-[150px] items-stretch gap-2.5 px-1">
-						{BARS.map((b, i) => (
-							<div key={b.day} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
-								<motion.div
-									initial={barInitial}
-									animate={{ height: `${b.h}%` }}
-									transition={useBarTransition(0.35 + i * 0.05)}
-									className={`w-full rounded-t-[5px] rounded-b-[2px] ${b.hi ? "bg-accent" : "bg-accent-soft"}`}
-								/>
-								<span className="text-[10px] font-semibold text-secondary">{b.day}</span>
-							</div>
-						))}
-					</div>
-				</motion.div>
-
-				<motion.div
-					initial={fadeUpHidden}
-					animate={fadeUpShow}
-					transition={useDelay(0.35)}
-					className="rounded-lg border border-border bg-canvas p-5 shadow-sm"
-				>
-					<h2 className="mb-3 text-[13.5px] font-extrabold">Pengumuman Terkini</h2>
-					{ANNOUNCEMENTS.map((a, i) => (
-						<div key={i} className={`py-2.5 ${i < ANNOUNCEMENTS.length - 1 ? "border-b border-border" : ""}`}>
-							<b className="block text-[12.5px] font-bold">{a.title}</b>
-							<span className="text-[11px] text-secondary">{a.meta}</span>
-						</div>
-					))}
+					) : birthdays.length === 0 ? (
+						<div className="py-6 text-center text-xs text-secondary">Tiada hari lahir bulan ini.</div>
+					) : (
+						birthdays.map((b, i) => {
+							const isToday = b.day === today.getDate();
+							return (
+								<div key={i} className={`py-2 ${i < birthdays.length - 1 ? "border-b border-border" : ""}`}>
+									<b className="block text-[12.5px] font-bold">
+										{b.nama} {isToday ? "\ud83c\udf89" : ""}
+									</b>
+									<span className="text-[11px] text-secondary">
+										Hari Lahir {b.day} {TK_MON[b.month - 1]}
+										{isToday ? " \u2014 Hari Ini!" : ""}
+									</span>
+								</div>
+							);
+						})
+					)}
 				</motion.div>
 			</div>
 
 			<motion.h2
 				initial={fadeUpHidden}
 				animate={fadeUpShow}
-				transition={useDelay(0.4)}
+				transition={useDelay(0.36)}
 				className="mb-3 text-[13.5px] font-extrabold"
 			>
 				Modul Utama
@@ -158,7 +254,7 @@ export function DashboardView({ user }: { user: AuthedUser }) {
 						key={m.label}
 						initial={fadeUpHidden}
 						animate={fadeUpShow}
-						transition={useDelay(0.44 + i * 0.03)}
+						transition={useDelay(0.4 + i * 0.03)}
 						title="Modul ini belum dibina dalam remake teras ini"
 						className="flex cursor-not-allowed items-center gap-3 rounded-lg border border-border bg-canvas p-3.5 opacity-70 shadow-sm"
 					>
