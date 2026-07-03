@@ -2,7 +2,17 @@
 
 import { motion } from "framer-motion";
 import type { AuthedUser } from "@/lib/types";
-import { IconFile, IconCalendar, IconActivity } from "@/components/icons";
+import {
+	IconActivity,
+	IconFile,
+	IconCalendar,
+	IconCheckCircle,
+	IconGift,
+	IconGraduation,
+	IconClipboard,
+	IconClock,
+	IconSatellite,
+} from "@/components/icons";
 
 const STATS = [
 	{ label: "Dokumen Rasmi", value: "128", trend: "+4.2%", spark: "0,20 15,18 30,22 45,12 60,15 75,6 90,9 100,4", color: "#12A579" },
@@ -21,10 +31,18 @@ const BARS = [
 	{ day: "Ahd", h: 12 },
 ];
 
+// Modul & penerangan sebenar diambil terus daripada grid "Modul Utama"
+// portal asal (index.html) supaya konsisten dengan sistem sedia ada.
 const MODULES = [
-	{ label: "Dokumen Rasmi", desc: "SOP & manual kerja", Icon: IconFile },
-	{ label: "Agenda", desc: "Mesyuarat akan datang", Icon: IconCalendar },
-	{ label: "Status Operasi", desc: "Prestasi harian", Icon: IconActivity },
+	{ label: "Status Semasa SPD", desc: "Sistem pemantauan & ringkasan semasa.", Icon: IconActivity },
+	{ label: "Dokumen Rasmi", desc: "SOP, manual, minit.", Icon: IconFile },
+	{ label: "Agenda MySPD", desc: "Takwim & aktiviti.", Icon: IconCalendar },
+	{ label: "EKSA MySPD", desc: "Eviden & audit.", Icon: IconCheckCircle },
+	{ label: "Perayaan", desc: "E-kad & hebahan.", Icon: IconGift },
+	{ label: "Status Kursus", desc: "Rekod latihan & 40 jam.", Icon: IconGraduation },
+	{ label: "Status BDR", desc: "Rekod tugasan BDR.", Icon: IconClipboard },
+	{ label: "Borang 4 Jam", desc: "Kebenaran tinggal pejabat.", Icon: IconClock },
+	{ label: "Status Operasi", desc: "Perhubungan & keberadaan.", Icon: IconSatellite },
 ];
 
 const ANNOUNCEMENTS = [
@@ -50,13 +68,8 @@ export function DashboardView({ user }: { user: AuthedUser }) {
 	const firstName = (user.name || "").split(" ")[0] || user.name;
 
 	return (
-		<div className="mx-auto max-w-[1180px] px-7 py-7">
-			<motion.div
-				initial={fadeUpHidden}
-				animate={fadeUpShow}
-				transition={useDelay(0)}
-				className="mb-5"
-			>
+		<div className="mx-auto flex min-h-[calc(100vh-56px)] max-w-[1180px] flex-col px-7 py-7">
+			<motion.div initial={fadeUpHidden} animate={fadeUpShow} transition={useDelay(0)} className="mb-5">
 				<h1 className="mb-0.5 text-[21px] font-extrabold tracking-tight">Selamat kembali, {firstName}.</h1>
 				<p className="text-[12.5px] text-secondary">Jumaat, 3 Julai 2026</p>
 			</motion.div>
@@ -123,10 +136,7 @@ export function DashboardView({ user }: { user: AuthedUser }) {
 				>
 					<h2 className="mb-3 text-[13.5px] font-extrabold">Pengumuman Terkini</h2>
 					{ANNOUNCEMENTS.map((a, i) => (
-						<div
-							key={i}
-							className={`py-2.5 ${i < ANNOUNCEMENTS.length - 1 ? "border-b border-border" : ""}`}
-						>
+						<div key={i} className={`py-2.5 ${i < ANNOUNCEMENTS.length - 1 ? "border-b border-border" : ""}`}>
 							<b className="block text-[12.5px] font-bold">{a.title}</b>
 							<span className="text-[11px] text-secondary">{a.meta}</span>
 						</div>
@@ -140,16 +150,17 @@ export function DashboardView({ user }: { user: AuthedUser }) {
 				transition={useDelay(0.4)}
 				className="mb-3 text-[13.5px] font-extrabold"
 			>
-				Modul Portal
+				Modul Utama
 			</motion.h2>
-			<div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+			<div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
 				{MODULES.map((m, i) => (
 					<motion.div
 						key={m.label}
 						initial={fadeUpHidden}
 						animate={fadeUpShow}
-						transition={useDelay(0.44 + i * 0.04)}
-						className="flex items-center gap-3 rounded-lg border border-border bg-canvas p-3.5 shadow-sm"
+						transition={useDelay(0.44 + i * 0.03)}
+						title="Modul ini belum dibina dalam remake teras ini"
+						className="flex cursor-not-allowed items-center gap-3 rounded-lg border border-border bg-canvas p-3.5 opacity-70 shadow-sm"
 					>
 						<div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[9px] bg-surface text-primary">
 							<m.Icon className="h-4 w-4" />
@@ -161,6 +172,11 @@ export function DashboardView({ user }: { user: AuthedUser }) {
 					</motion.div>
 				))}
 			</div>
+
+			<footer className="mt-auto flex flex-col gap-1 border-t border-border pt-4 text-[11px] text-secondary sm:flex-row sm:items-center sm:justify-between">
+				<span>&copy; 2026 MYSPD. Hakcipta Terpelihara.</span>
+				<span>Versi 2.0.0 &middot; Seksyen Penawanan Data</span>
+			</footer>
 		</div>
 	);
 }

@@ -29,6 +29,7 @@ export function ProfileModal({
 	const [gred, setGred] = useState(user.gred || "");
 	const [cawangan, setCawangan] = useState(user.cawangan || "");
 	const [noTel, setNoTel] = useState(user.no_tel || "");
+	const [tarikhLahir, setTarikhLahir] = useState("");
 	const [busy, setBusy] = useState(false);
 	const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
 
@@ -39,6 +40,9 @@ export function ProfileModal({
 		}
 		setBusy(true);
 		try {
+			// Nota: `p_tarikh_lahir` belum dihantar sebab RPC `update_my_profile`
+			// sedia ada (Supabase) mungkin belum terima parameter ini -- sahkan
+			// tandatangan fungsi sebelum menghantar medan tambahan.
 			const { error } = await auth.sb.rpc("update_my_profile", {
 				p_nama: nama.trim(),
 				p_jawatan: jawatan.trim(),
@@ -57,11 +61,12 @@ export function ProfileModal({
 	}
 
 	const fields: Array<[string, string, (v: string) => void]> = [
-		["Nama", nama, setNama],
+		["Nama Penuh", nama, setNama],
 		["Jawatan", jawatan, setJawatan],
 		["Gred", gred, setGred],
-		["Cawangan", cawangan, setCawangan],
-		["No. Tel", noTel, setNoTel],
+		["Cawangan / Seksyen", cawangan, setCawangan],
+		["No. Telefon", noTel, setNoTel],
+		["Tarikh Lahir", tarikhLahir, setTarikhLahir],
 	];
 
 	return (

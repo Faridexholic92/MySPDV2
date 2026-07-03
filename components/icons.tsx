@@ -181,3 +181,29 @@ export const IconClock = (p: IconProps) => (
 		<path d="M12 7v5l3 3" />
 	</Base>
 );
+
+export const IconGift = (p: IconProps) => (
+	<Base {...p}>
+		<rect x="3" y="8" width="18" height="4" rx="1" />
+		<path d="M12 8v13M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7" />
+		<path d="M12 8c-2.5 0-3.5-1.5-3.5-3A2.5 2.5 0 0 1 12 8Z" />
+		<path d="M12 8c2.5 0 3.5-1.5 3.5-3A2.5 2.5 0 0 0 12 8Z" />
+	</Base>
+);
+
+export const IconSatellite = (p: IconProps) => (
+	<Base {...p}>
+		<path d="M13 7 9 3 4.5 7.5 8.5 11.5" />
+		<path d="m15 9-6 6" />
+		<path d="m17 11 4.5 4.5L17 20l-4-4" />
+		<path d="M2 22c2-4 4-6 8-8" />
+	</Base>
+);
+
+export const IconClipboard = (p: IconProps) => (
+	<Base {...p}>
+		<rect x="5" y="4" width="14" height="17" rx="2" />
+		<path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1" />
+		<path d="M9 11h6M9 15h6M9 19h3" />
+	</Base>
+);

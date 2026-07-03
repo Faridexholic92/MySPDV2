@@ -5,8 +5,13 @@ import {
 	IconGrid,
 	IconFile,
 	IconCalendar,
-	IconActivity,
+	IconCheckCircle,
 	IconGraduation,
+	IconGift,
+	IconClipboard,
+	IconClock,
+	IconSatellite,
+	IconActivity,
 	IconShield,
 } from "@/components/icons";
 import type { AuthedUser } from "@/lib/types";
@@ -15,11 +20,17 @@ export type ViewKey = "dashboard" | "admin";
 
 const whiteStrokeStyle: React.CSSProperties = { stroke: "#fff" };
 
+// Modul sebenar diambil dari grid "Modul Utama" portal asal (index.html).
 const MODULE_NAV = [
+	{ label: "Status Semasa SPD", Icon: IconActivity },
 	{ label: "Dokumen Rasmi", Icon: IconFile },
-	{ label: "Agenda", Icon: IconCalendar },
-	{ label: "Status Operasi", Icon: IconActivity },
+	{ label: "Agenda MySPD", Icon: IconCalendar },
+	{ label: "EKSA MySPD", Icon: IconCheckCircle },
+	{ label: "Perayaan", Icon: IconGift },
 	{ label: "Status Kursus", Icon: IconGraduation },
+	{ label: "Status BDR", Icon: IconClipboard },
+	{ label: "Borang 4 Jam", Icon: IconClock },
+	{ label: "Status Operasi", Icon: IconSatellite },
 ];
 
 export function Sidebar({
@@ -40,7 +51,7 @@ export function Sidebar({
 		.toUpperCase();
 
 	return (
-		<aside className="flex w-[236px] shrink-0 flex-col bg-ink p-3">
+		<aside className="flex w-[236px] shrink-0 flex-col overflow-y-auto bg-ink p-3">
 			<div className="flex items-center gap-2.5 px-2 pb-5 pt-2">
 				<div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-accent">
 					<LogoMark className="h-[15px] w-[15px]" style={whiteStrokeStyle} />
@@ -65,6 +76,10 @@ export function Sidebar({
 				<IconGrid className={`h-4 w-4 ${view === "dashboard" ? "text-accent-2" : "text-white/50"}`} />
 				Dashboard
 			</button>
+
+			<div className="px-2.5 pb-1.5 pt-3 text-[10px] font-bold uppercase tracking-wider text-white/35">
+				Modul Utama
+			</div>
 			{MODULE_NAV.map(({ label, Icon }) => (
 				<button
 					key={label}

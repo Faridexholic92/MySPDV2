@@ -52,7 +52,7 @@ export function LoginScreen({ auth }: { auth: ReturnType<typeof useAuth> }) {
 						transition={useDelay(0.05)}
 						className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-accent-2/30 bg-accent/15 px-3 py-1.5 text-[11px] font-bold text-accent-2"
 					>
-						&#9679; Sistem Dalaman Rasmi
+						&#9679; Sistem Seksyen Penawanan Data
 					</motion.span>
 					<motion.h1
 						initial={fadeUpHidden}

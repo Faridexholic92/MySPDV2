@@ -14,7 +14,7 @@ function SplashScreen() {
 			<div className="flex h-12 w-12 animate-pulse items-center justify-center rounded-xl bg-ink">
 				<LogoMark className="h-5 w-5" style={whiteStrokeStyle} />
 			</div>
-			<p className="text-sm font-semibold text-secondary">Memuatkan Portal MySPD\u2026</p>
+			<p className="text-sm font-semibold text-secondary">Portal Seksyen Penawanan Data\u2026</p>
 		</div>
 	);
 }
