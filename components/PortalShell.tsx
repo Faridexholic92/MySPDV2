@@ -11,8 +11,27 @@ import { Sidebar, type ViewKey } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
 import { DashboardView } from "@/components/DashboardView";
 import { StatusSpdView } from "@/components/StatusSpdView";
+import { StatusBdrView } from "@/components/StatusBdrView";
+import { StatusOperasiView } from "@/components/StatusOperasiView";
+import { StatusKursusView } from "@/components/StatusKursusView";
+import { Borang4JamView } from "@/components/Borang4JamView";
+import { AgendaView } from "@/components/AgendaView";
+import { DokumenRasmiView, EksaView, PerayaanView } from "@/components/LinkHubView";
 import { AdminView } from "@/components/AdminView";
 import type { AuthedUser } from "@/lib/types";
+
+const VIEW_TITLES: Partial<Record<ViewKey, { crumb: string; active: string }>> = {
+	admin: { crumb: "Pentadbiran", active: "Pengurusan Pengguna" },
+	"status-spd": { crumb: "Operasi", active: "Status Semasa SPD" },
+	"status-bdr": { crumb: "Operasi", active: "Status BDR" },
+	"status-operasi": { crumb: "Operasi", active: "Status Operasi" },
+	"status-kursus": { crumb: "Jadual", active: "Status Kursus" },
+	"borang-4jam": { crumb: "Dokumen", active: "Borang 4 Jam" },
+	agenda: { crumb: "Jadual", active: "Agenda MySPD" },
+	dokumen: { crumb: "Dokumen", active: "Dokumen Rasmi" },
+	eksa: { crumb: "Kualiti & Komuniti", active: "EKSA MySPD" },
+	perayaan: { crumb: "Kualiti & Komuniti", active: "Perayaan" },
+};
 
 const viewInitial = { opacity: 0, y: 8 };
 const viewAnimate = { opacity: 1, y: 0 };
@@ -40,13 +59,7 @@ export function PortalShell({ auth, user }: { auth: ReturnType<typeof useAuth>; 
 					theme={theme}
 					onToggleTheme={toggleTheme}
 					onOpenProfile={() => setProfileOpen(true)}
-					title={
-						effectiveView === "admin"
-							? { crumb: "Pentadbiran", active: "Pengurusan Pengguna" }
-							: effectiveView === "status-spd"
-								? { crumb: "Operasi", active: "Status Semasa SPD" }
-								: undefined
-					}
+					title={VIEW_TITLES[effectiveView]}
 				/>
 
 				<AnimatePresence mode="wait">
@@ -55,6 +68,22 @@ export function PortalShell({ auth, user }: { auth: ReturnType<typeof useAuth>; 
 							<AdminView auth={auth} showToast={showToast} />
 						) : effectiveView === "status-spd" ? (
 							<StatusSpdView auth={auth} />
+						) : effectiveView === "status-bdr" ? (
+							<StatusBdrView auth={auth} />
+						) : effectiveView === "status-operasi" ? (
+							<StatusOperasiView auth={auth} />
+						) : effectiveView === "status-kursus" ? (
+							<StatusKursusView auth={auth} />
+						) : effectiveView === "borang-4jam" ? (
+							<Borang4JamView auth={auth} />
+						) : effectiveView === "agenda" ? (
+							<AgendaView auth={auth} />
+						) : effectiveView === "dokumen" ? (
+							<DokumenRasmiView />
+						) : effectiveView === "eksa" ? (
+							<EksaView />
+						) : effectiveView === "perayaan" ? (
+							<PerayaanView />
 						) : (
 							<DashboardView user={user} auth={auth} onOpenModule={setView} />
 						)}

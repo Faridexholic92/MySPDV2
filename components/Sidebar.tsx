@@ -16,7 +16,18 @@ import {
 } from "@/components/icons";
 import type { AuthedUser } from "@/lib/types";
 
-export type ViewKey = "dashboard" | "status-spd" | "admin";
+export type ViewKey =
+	| "dashboard"
+	| "status-spd"
+	| "status-bdr"
+	| "status-operasi"
+	| "status-kursus"
+	| "borang-4jam"
+	| "agenda"
+	| "dokumen"
+	| "eksa"
+	| "perayaan"
+	| "admin";
 
 const whiteStrokeStyle: React.CSSProperties = { stroke: "#fff" };
 
@@ -33,29 +44,29 @@ const NAV_SECTIONS: Array<{ heading: string; items: NavItem[] }> = [
 		heading: "Operasi",
 		items: [
 			{ label: "Status Semasa SPD", Icon: IconActivity, view: "status-spd" },
-			{ label: "Status Operasi", Icon: IconSatellite },
-			{ label: "Status BDR", Icon: IconClipboard },
+			{ label: "Status Operasi", Icon: IconSatellite, view: "status-operasi" },
+			{ label: "Status BDR", Icon: IconClipboard, view: "status-bdr" },
 		],
 	},
 	{
 		heading: "Dokumen",
 		items: [
-			{ label: "Dokumen Rasmi", Icon: IconFile },
-			{ label: "Borang 4 Jam", Icon: IconClock },
+			{ label: "Dokumen Rasmi", Icon: IconFile, view: "dokumen" },
+			{ label: "Borang 4 Jam", Icon: IconClock, view: "borang-4jam" },
 		],
 	},
 	{
 		heading: "Jadual",
 		items: [
-			{ label: "Agenda MySPD", Icon: IconCalendar },
-			{ label: "Status Kursus", Icon: IconGraduation },
+			{ label: "Agenda MySPD", Icon: IconCalendar, view: "agenda" },
+			{ label: "Status Kursus", Icon: IconGraduation, view: "status-kursus" },
 		],
 	},
 	{
 		heading: "Kualiti & Komuniti",
 		items: [
-			{ label: "EKSA MySPD", Icon: IconCheckCircle },
-			{ label: "Perayaan", Icon: IconGift },
+			{ label: "EKSA MySPD", Icon: IconCheckCircle, view: "eksa" },
+			{ label: "Perayaan", Icon: IconGift, view: "perayaan" },
 		],
 	},
 ];

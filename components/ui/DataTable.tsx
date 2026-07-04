@@ -23,6 +23,7 @@ export function DataTable<T extends { id: string | number }>({
 	pageSize = 8,
 	emptyState,
 	footerLabel = "rekod",
+	onRowClick,
 }: {
 	columns: Column<T>[];
 	rows: T[];
@@ -30,6 +31,7 @@ export function DataTable<T extends { id: string | number }>({
 	pageSize?: number;
 	emptyState?: ReactNode;
 	footerLabel?: string;
+	onRowClick?: (row: T) => void;
 }) {
 	const [page, setPage] = useState(0);
 	const pages = Math.max(1, Math.ceil(rows.length / pageSize));
@@ -65,7 +67,11 @@ export function DataTable<T extends { id: string | number }>({
 									</tr>
 								))
 							: view.map((row) => (
-									<tr key={row.id} className="border-b border-border transition-colors last:border-0 hover:bg-surface">
+									<tr
+										key={row.id}
+										onClick={onRowClick ? () => onRowClick(row) : undefined}
+										className={`border-b border-border transition-colors last:border-0 hover:bg-surface ${onRowClick ? "cursor-pointer" : ""}`}
+									>
 										{columns.map((c) => (
 											<td key={c.key} className={`px-4 py-2.5 text-primary ${alignClass[c.align ?? "left"]}`}>
 												{c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? "\u2014")}

@@ -20,16 +20,18 @@ import {
 
 // Modul & penerangan sebenar diambil terus daripada grid "Modul Utama"
 // portal asal (index.html) supaya konsisten dengan sistem sedia ada.
-const MODULES: Array<{ label: string; desc: string; Icon: typeof IconActivity; view?: "status-spd" }> = [
+type ModuleView = Exclude<import("@/components/Sidebar").ViewKey, "dashboard" | "admin">;
+
+const MODULES: Array<{ label: string; desc: string; Icon: typeof IconActivity; view?: ModuleView }> = [
 	{ label: "Status Semasa SPD", desc: "Sistem pemantauan & ringkasan semasa.", Icon: IconActivity, view: "status-spd" },
-	{ label: "Dokumen Rasmi", desc: "SOP, manual, minit.", Icon: IconFile },
-	{ label: "Agenda MySPD", desc: "Takwim & aktiviti.", Icon: IconCalendar },
-	{ label: "EKSA MySPD", desc: "Eviden & audit.", Icon: IconCheckCircle },
-	{ label: "Perayaan", desc: "E-kad & hebahan.", Icon: IconGift },
-	{ label: "Status Kursus", desc: "Rekod latihan & 40 jam.", Icon: IconGraduation },
-	{ label: "Status BDR", desc: "Rekod tugasan BDR.", Icon: IconClipboard },
-	{ label: "Borang 4 Jam", desc: "Kebenaran tinggal pejabat.", Icon: IconClock },
-	{ label: "Status Operasi", desc: "Perhubungan & keberadaan.", Icon: IconSatellite },
+	{ label: "Dokumen Rasmi", desc: "SOP, manual, minit.", Icon: IconFile, view: "dokumen" },
+	{ label: "Agenda MySPD", desc: "Takwim & aktiviti.", Icon: IconCalendar, view: "agenda" },
+	{ label: "EKSA MySPD", desc: "Eviden & audit.", Icon: IconCheckCircle, view: "eksa" },
+	{ label: "Perayaan", desc: "E-kad & hebahan.", Icon: IconGift, view: "perayaan" },
+	{ label: "Status Kursus", desc: "Rekod latihan & 40 jam.", Icon: IconGraduation, view: "status-kursus" },
+	{ label: "Status BDR", desc: "Rekod tugasan BDR.", Icon: IconClipboard, view: "status-bdr" },
+	{ label: "Borang 4 Jam", desc: "Kebenaran tinggal pejabat.", Icon: IconClock, view: "borang-4jam" },
+	{ label: "Status Operasi", desc: "Perhubungan & keberadaan.", Icon: IconSatellite, view: "status-operasi" },
 ];
 
 const TK_MON = [
@@ -70,7 +72,7 @@ export function DashboardView({
 }: {
 	user: AuthedUser;
 	auth: ReturnType<typeof useAuth>;
-	onOpenModule?: (v: "status-spd") => void;
+	onOpenModule?: (v: ModuleView) => void;
 }) {
 	const firstName = (user.name || "").split(" ")[0] || user.name;
 	const [loading, setLoading] = useState(true);
@@ -263,7 +265,7 @@ export function DashboardView({
 						initial={fadeUpHidden}
 						animate={fadeUpShow}
 						transition={useDelay(0.4 + i * 0.03)}
-						onClick={m.view && onOpenModule ? () => onOpenModule(m.view as "status-spd") : undefined}
+						onClick={m.view && onOpenModule ? () => onOpenModule(m.view!) : undefined}
 						title={m.view ? undefined : "Modul ini belum dibina dalam remake teras ini"}
 						className={
 							m.view
