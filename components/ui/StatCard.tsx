@@ -2,25 +2,28 @@
 
 import type { ComponentType } from "react";
 
-export type StatTone = "accent" | "good" | "warn" | "risk";
+export type StatTone = "accent" | "good" | "warn" | "risk" | "neutral";
 
 const toneText: Record<StatTone, string> = {
 	accent: "text-accent",
 	good: "text-good",
 	warn: "text-warn",
 	risk: "text-risk",
+	neutral: "text-secondary",
 };
 const toneSoft: Record<StatTone, string> = {
 	accent: "bg-accent-soft text-accent",
 	good: "bg-good-soft text-good",
 	warn: "bg-warn-soft text-warn",
 	risk: "bg-risk-soft text-risk",
+	neutral: "bg-surface-2 text-secondary",
 };
 const toneStroke: Record<StatTone, string> = {
 	accent: "var(--accent)",
 	good: "var(--good)",
 	warn: "var(--warn)",
 	risk: "var(--risk)",
+	neutral: "var(--border)",
 };
 
 /** Sparkline SVG ringkas — trend mini di dalam kad statistik. */

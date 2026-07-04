@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { IconFile, IconCheckCircle, IconGift } from "@/components/icons";
 
 // Hub generik untuk modul yang kandungannya masih dihoskan di portal statik asal
 // (https://www.myspd.qzz.io). Setiap kad membuka halaman legasi dalam tab baharu
