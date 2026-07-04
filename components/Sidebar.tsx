@@ -125,7 +125,7 @@ export function Sidebar({
 		.toUpperCase();
 
 	return (
-		<aside className="flex w-[236px] shrink-0 flex-col overflow-y-auto bg-ink p-3">
+		<aside className="sidebar-aurora flex w-[236px] shrink-0 flex-col overflow-y-auto bg-ink p-3">
 			<div className="flex items-center gap-2.5 px-2 pb-5 pt-2">
 				<div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-accent">
 					<LogoMark className="h-[15px] w-[15px]" style={whiteStrokeStyle} />

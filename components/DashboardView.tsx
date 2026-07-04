@@ -166,7 +166,7 @@ export function DashboardView({
 						initial={fadeUpHidden}
 						animate={fadeUpShow}
 						transition={useDelay(0.06 + i * 0.05)}
-						className="rounded-lg border border-border bg-canvas p-4 shadow-sm"
+						className="rounded-lg glass-card p-4 shadow-sm"
 					>
 						<div className="mb-2 flex items-center justify-between">
 							<span className="text-[11px] font-bold uppercase tracking-wide text-secondary">{s.label}</span>
@@ -189,7 +189,7 @@ export function DashboardView({
 					initial={fadeUpHidden}
 					animate={fadeUpShow}
 					transition={useDelay(0.24)}
-					className="rounded-lg border border-border bg-canvas p-5 shadow-sm"
+					className="rounded-lg glass-card p-5 shadow-sm"
 				>
 					<h2 className="mb-3 flex items-center gap-2 text-[13.5px] font-extrabold">
 						<IconBell className="h-3.5 w-3.5 text-secondary" />
@@ -220,7 +220,7 @@ export function DashboardView({
 					initial={fadeUpHidden}
 					animate={fadeUpShow}
 					transition={useDelay(0.3)}
-					className="rounded-lg border border-border bg-canvas p-5 shadow-sm"
+					className="rounded-lg glass-card p-5 shadow-sm"
 				>
 					<h2 className="mb-3 text-[13.5px] font-extrabold">Hari Lahir Bulan Ini</h2>
 					{loading ? (
@@ -269,8 +269,8 @@ export function DashboardView({
 						title={m.view ? undefined : "Modul ini belum dibina dalam remake teras ini"}
 						className={
 							m.view
-								? "flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-canvas p-3.5 shadow-sm transition-colors hover:border-accent"
-								: "flex cursor-not-allowed items-center gap-3 rounded-lg border border-border bg-canvas p-3.5 opacity-70 shadow-sm"
+								? "flex cursor-pointer items-center gap-3 rounded-lg glass-card p-3.5 shadow-sm transition-colors hover:border-accent"
+								: "flex cursor-not-allowed items-center gap-3 rounded-lg glass-card p-3.5 opacity-70 shadow-sm"
 						}
 					>
 						<div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[9px] bg-surface text-primary">

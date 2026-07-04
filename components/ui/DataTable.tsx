@@ -39,7 +39,7 @@ export function DataTable<T extends { id: string | number }>({
 	const view = useMemo(() => rows.slice(safePage * pageSize, (safePage + 1) * pageSize), [rows, safePage, pageSize]);
 
 	return (
-		<div className="overflow-hidden rounded-lg border border-border bg-canvas shadow-sm">
+		<div className="overflow-hidden rounded-lg glass-card shadow-sm">
 			<div className="overflow-x-auto">
 				<table className="w-full border-collapse text-[12.5px]">
 					<thead>

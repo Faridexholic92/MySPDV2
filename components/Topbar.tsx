@@ -34,7 +34,7 @@ export function Topbar({
 		.toUpperCase();
 
 	return (
-		<div className="flex h-14 items-center justify-between border-b border-border bg-canvas px-7">
+		<div className="flex h-14 items-center justify-between glass-topbar px-7">
 			{title ? (
 				<div className="text-[12.5px] font-semibold text-secondary">
 					{title.crumb} / <b className="font-bold text-primary">{title.active}</b>
@@ -78,7 +78,7 @@ export function Topbar({
 									animate={menuAnimate}
 									exit={menuInitial}
 									transition={menuTransition}
-									className="absolute right-0 top-[calc(100%+8px)] z-20 w-48 rounded-xl border border-border bg-canvas p-1.5 shadow-card"
+									className="absolute right-0 top-[calc(100%+8px)] z-20 w-48 rounded-xl glass-card p-1.5 shadow-card"
 								>
 									<div className="px-2.5 py-2 text-xs text-secondary">
 										Log masuk sebagai

@@ -112,7 +112,7 @@ export function LoginScreen({ auth }: { auth: ReturnType<typeof useAuth> }) {
 			</div>
 
 			{/* Form panel */}
-			<div className="flex items-center justify-center border-l border-border bg-canvas p-8">
+			<div className="flex items-center justify-center glass-strong border-l-0 p-8">
 				<div className="w-full max-w-[340px]">
 					<div className="mb-6 flex items-center gap-2.5 lg:hidden">
 						<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent">

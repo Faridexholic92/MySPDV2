@@ -64,7 +64,7 @@ function ProfileModal({ row, onClose }: { row: BdrRow; onClose: () => void }) {
 		: "Tiada rekod";
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose} role="dialog" aria-modal="true">
-			<div className="w-full max-w-[560px] overflow-hidden rounded-lg border border-border bg-canvas shadow-card" onClick={(e) => e.stopPropagation()}>
+			<div className="w-full max-w-[560px] overflow-hidden rounded-lg glass-card shadow-card" onClick={(e) => e.stopPropagation()}>
 				<div className="flex items-center justify-between border-b border-border px-5 py-4">
 					<div className="flex items-center gap-3">
 						<span className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 text-[12px] font-bold text-secondary">
@@ -238,7 +238,7 @@ export function StatusBdrView({ auth }: { auth: ReturnType<typeof useAuth> }) {
 					actions={
 						<button
 							onClick={exportCsv}
-							className="flex items-center gap-2 rounded-lg border border-border bg-canvas px-3 py-2 text-[12px] font-semibold text-primary shadow-sm transition-colors hover:bg-surface"
+							className="flex items-center gap-2 rounded-lg glass-card px-3 py-2 text-[12px] font-semibold text-primary shadow-sm transition-colors hover:bg-surface"
 						>
 							<IconFile className="h-3.5 w-3.5" />
 							Eksport CSV
@@ -256,7 +256,7 @@ export function StatusBdrView({ auth }: { auth: ReturnType<typeof useAuth> }) {
 
 			<motion.div variants={fadeUp} initial="hidden" animate="show" transition={t2} className="mt-5 flex flex-wrap items-center justify-between gap-2.5">
 				<SegmentedTabs tabs={tabs} active={tab} onChange={setTab} />
-				<label className="flex w-[220px] items-center gap-2 rounded-lg border border-border bg-canvas px-3 py-2 text-[12px] text-secondary focus-within:border-accent">
+				<label className="flex w-[220px] items-center gap-2 rounded-lg glass-card px-3 py-2 text-[12px] text-secondary focus-within:border-accent">
 					<IconSearch className="h-3.5 w-3.5 shrink-0" />
 					<input
 						value={q}

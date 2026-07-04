@@ -54,7 +54,7 @@ export function NewPasswordModal({
 				initial={cardInitial}
 				animate={cardAnimate}
 				transition={cardTransition}
-				className="w-full max-w-sm rounded-2xl border border-border bg-canvas p-8 shadow-card"
+				className="w-full max-w-sm rounded-2xl glass-card p-8 shadow-card"
 			>
 				<div className="mb-6 flex items-center gap-2.5">
 					<div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-ink">

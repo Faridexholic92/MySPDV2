@@ -165,7 +165,7 @@ export function AdminView({
 						initial={fadeUpHidden}
 						animate={fadeUpShow}
 						transition={useDelay(0.06 + i * 0.05)}
-						className="rounded-lg border border-border bg-canvas p-4 shadow-sm"
+						className="rounded-lg glass-card p-4 shadow-sm"
 					>
 						<span className="mb-1.5 block text-[11px] font-semibold text-secondary">{s.label}</span>
 						<b className="text-[22px] font-extrabold">{loading ? "\u2013" : s.value}</b>
@@ -177,7 +177,7 @@ export function AdminView({
 				initial={fadeUpHidden}
 				animate={fadeUpShow}
 				transition={useDelay(0.28)}
-				className="mb-5 overflow-hidden rounded-lg border border-border bg-canvas shadow-sm"
+				className="mb-5 overflow-hidden rounded-lg glass-card shadow-sm"
 			>
 				<div className="flex items-center justify-between border-b border-border px-4.5 py-3.5">
 					<h2 className="text-[13.5px] font-extrabold">Senarai Pengguna</h2>
@@ -260,7 +260,7 @@ export function AdminView({
 				initial={fadeUpHidden}
 				animate={fadeUpShow}
 				transition={useDelay(0.36)}
-				className="overflow-hidden rounded-lg border border-border bg-canvas shadow-sm"
+				className="overflow-hidden rounded-lg glass-card shadow-sm"
 			>
 				<div className="border-b border-border px-4.5 py-3.5">
 					<h2 className="text-[13.5px] font-extrabold">Log Audit</h2>
@@ -307,7 +307,7 @@ export function AdminView({
 							animate={drawerAnimate}
 							exit={drawerInitial}
 							transition={drawerTransition}
-							className="fixed bottom-0 right-0 top-0 z-50 flex w-full max-w-[380px] flex-col border-l border-border bg-canvas p-6 shadow-card"
+							className="fixed bottom-0 right-0 top-0 z-50 flex w-full max-w-[380px] flex-col glass-strong border-l-0 p-6 shadow-card"
 						>
 							<button
 								onClick={() => setDrawerOpen(false)}

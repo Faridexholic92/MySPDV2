@@ -49,7 +49,7 @@ export function PortalShell({ auth, user }: { auth: ReturnType<typeof useAuth>; 
 	const effectiveView: ViewKey = view === "admin" && user.role !== "superadmin" ? "dashboard" : view;
 
 	return (
-		<div className="flex min-h-screen bg-surface">
+		<div className="flex min-h-screen">
 			<Sidebar user={user} view={effectiveView} onNavigate={setView} />
 
 			<div className="flex min-w-0 flex-1 flex-col">

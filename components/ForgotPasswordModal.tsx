@@ -61,7 +61,7 @@ export function ForgotPasswordModal({
 				animate={cardAnimate}
 				exit={cardExit}
 				transition={cardTransition}
-				className="w-full max-w-sm rounded-2xl border border-border bg-canvas p-6 shadow-card"
+				className="w-full max-w-sm rounded-2xl glass-card p-6 shadow-card"
 				onClick={(e) => e.stopPropagation()}
 			>
 				<div className="mb-4 flex items-center justify-between">

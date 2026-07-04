@@ -45,7 +45,7 @@ export function LinkHubView({
 						href={`${LEGACY_BASE}${it.path}`}
 						target="_blank"
 						rel="noreferrer"
-						className="group flex items-start gap-3.5 rounded-lg border border-border bg-canvas p-4 shadow-sm transition-colors hover:border-accent"
+						className="group flex items-start gap-3.5 rounded-lg glass-card p-4 shadow-sm transition-colors hover:border-accent"
 					>
 						<span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-2 text-[18px]">{it.emoji}</span>
 						<span className="min-w-0 flex-1">

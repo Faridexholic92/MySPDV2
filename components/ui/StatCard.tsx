@@ -66,7 +66,7 @@ export function StatCard({
 	Icon?: ComponentType<{ className?: string }>;
 }) {
 	return (
-		<div className="rounded-lg border border-border bg-canvas p-4 shadow-sm">
+		<div className="rounded-lg glass-card p-4 shadow-sm">
 			<div className="flex items-center justify-between gap-2">
 				<span className="text-[11.5px] font-semibold uppercase tracking-wide text-secondary">{label}</span>
 				{Icon && (
