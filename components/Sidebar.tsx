@@ -16,22 +16,85 @@ import {
 } from "@/components/icons";
 import type { AuthedUser } from "@/lib/types";
 
-export type ViewKey = "dashboard" | "admin";
+export type ViewKey = "dashboard" | "status-spd" | "admin";
 
 const whiteStrokeStyle: React.CSSProperties = { stroke: "#fff" };
 
-// Modul sebenar diambil dari grid "Modul Utama" portal asal (index.html).
-const MODULE_NAV = [
-	{ label: "Status Semasa SPD", Icon: IconActivity },
-	{ label: "Dokumen Rasmi", Icon: IconFile },
-	{ label: "Agenda MySPD", Icon: IconCalendar },
-	{ label: "EKSA MySPD", Icon: IconCheckCircle },
-	{ label: "Perayaan", Icon: IconGift },
-	{ label: "Status Kursus", Icon: IconGraduation },
-	{ label: "Status BDR", Icon: IconClipboard },
-	{ label: "Borang 4 Jam", Icon: IconClock },
-	{ label: "Status Operasi", Icon: IconSatellite },
+type NavItem = {
+	label: string;
+	Icon: typeof IconActivity;
+	view?: ViewKey; // ada view = modul sudah dibina & boleh dinavigasi
+};
+
+// Kategori diambil dari data-cat portal asal (index.html):
+// operasi / dokumen / jadual / kualiti / komuniti.
+const NAV_SECTIONS: Array<{ heading: string; items: NavItem[] }> = [
+	{
+		heading: "Operasi",
+		items: [
+			{ label: "Status Semasa SPD", Icon: IconActivity, view: "status-spd" },
+			{ label: "Status Operasi", Icon: IconSatellite },
+			{ label: "Status BDR", Icon: IconClipboard },
+		],
+	},
+	{
+		heading: "Dokumen",
+		items: [
+			{ label: "Dokumen Rasmi", Icon: IconFile },
+			{ label: "Borang 4 Jam", Icon: IconClock },
+		],
+	},
+	{
+		heading: "Jadual",
+		items: [
+			{ label: "Agenda MySPD", Icon: IconCalendar },
+			{ label: "Status Kursus", Icon: IconGraduation },
+		],
+	},
+	{
+		heading: "Kualiti & Komuniti",
+		items: [
+			{ label: "EKSA MySPD", Icon: IconCheckCircle },
+			{ label: "Perayaan", Icon: IconGift },
+		],
+	},
 ];
+
+function NavButton({
+	item,
+	active,
+	onNavigate,
+}: {
+	item: NavItem;
+	active: boolean;
+	onNavigate: (v: ViewKey) => void;
+}) {
+	const { label, Icon, view } = item;
+	if (!view) {
+		return (
+			<button
+				title="Modul ini belum dibina dalam remake teras ini"
+				className="mb-0.5 flex w-full cursor-not-allowed items-center gap-2.5 rounded-lg border-l-2 border-transparent px-2.5 py-2 text-left text-[13px] font-semibold text-white/30"
+			>
+				<Icon className="h-4 w-4 text-white/25" />
+				{label}
+			</button>
+		);
+	}
+	return (
+		<button
+			onClick={() => onNavigate(view)}
+			className={`mb-0.5 flex w-full items-center gap-2.5 rounded-lg border-l-2 px-2.5 py-2 text-left text-[13px] font-semibold ${
+				active
+					? "border-accent bg-accent/[0.14] text-white"
+					: "border-transparent text-white/75 hover:bg-white/[0.04]"
+			}`}
+		>
+			<Icon className={`h-4 w-4 ${active ? "text-accent-2" : "text-white/50"}`} />
+			{label}
+		</button>
+	);
+}
 
 export function Sidebar({
 	user,
@@ -77,18 +140,15 @@ export function Sidebar({
 				Dashboard
 			</button>
 
-			<div className="px-2.5 pb-1.5 pt-3 text-[10px] font-bold uppercase tracking-wider text-white/35">
-				Modul Utama
-			</div>
-			{MODULE_NAV.map(({ label, Icon }) => (
-				<button
-					key={label}
-					title="Modul ini belum dibina dalam remake teras ini"
-					className="mb-0.5 flex w-full cursor-not-allowed items-center gap-2.5 rounded-lg border-l-2 border-transparent px-2.5 py-2 text-left text-[13px] font-semibold text-white/30"
-				>
-					<Icon className="h-4 w-4 text-white/25" />
-					{label}
-				</button>
+			{NAV_SECTIONS.map((section) => (
+				<div key={section.heading}>
+					<div className="px-2.5 pb-1.5 pt-3 text-[10px] font-bold uppercase tracking-wider text-white/35">
+						{section.heading}
+					</div>
+					{section.items.map((item) => (
+						<NavButton key={item.label} item={item} active={item.view === view} onNavigate={onNavigate} />
+					))}
+				</div>
 			))}
 
 			{isSuperAdmin && (

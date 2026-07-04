@@ -10,6 +10,7 @@ import { ProfileModal } from "@/components/ProfileModal";
 import { Sidebar, type ViewKey } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
 import { DashboardView } from "@/components/DashboardView";
+import { StatusSpdView } from "@/components/StatusSpdView";
 import { AdminView } from "@/components/AdminView";
 import type { AuthedUser } from "@/lib/types";
 
@@ -39,15 +40,23 @@ export function PortalShell({ auth, user }: { auth: ReturnType<typeof useAuth>; 
 					theme={theme}
 					onToggleTheme={toggleTheme}
 					onOpenProfile={() => setProfileOpen(true)}
-					title={effectiveView === "admin" ? { crumb: "Pentadbiran", active: "Pengurusan Pengguna" } : undefined}
+					title={
+						effectiveView === "admin"
+							? { crumb: "Pentadbiran", active: "Pengurusan Pengguna" }
+							: effectiveView === "status-spd"
+								? { crumb: "Operasi", active: "Status Semasa SPD" }
+								: undefined
+					}
 				/>
 
 				<AnimatePresence mode="wait">
 					<motion.div key={effectiveView} initial={viewInitial} animate={viewAnimate} exit={viewExit} transition={viewTransition}>
 						{effectiveView === "admin" ? (
 							<AdminView auth={auth} showToast={showToast} />
+						) : effectiveView === "status-spd" ? (
+							<StatusSpdView auth={auth} />
 						) : (
-							<DashboardView user={user} auth={auth} />
+							<DashboardView user={user} auth={auth} onOpenModule={setView} />
 						)}
 					</motion.div>
 				</AnimatePresence>

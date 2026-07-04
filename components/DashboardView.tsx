@@ -20,8 +20,8 @@ import {
 
 // Modul & penerangan sebenar diambil terus daripada grid "Modul Utama"
 // portal asal (index.html) supaya konsisten dengan sistem sedia ada.
-const MODULES = [
-	{ label: "Status Semasa SPD", desc: "Sistem pemantauan & ringkasan semasa.", Icon: IconActivity },
+const MODULES: Array<{ label: string; desc: string; Icon: typeof IconActivity; view?: "status-spd" }> = [
+	{ label: "Status Semasa SPD", desc: "Sistem pemantauan & ringkasan semasa.", Icon: IconActivity, view: "status-spd" },
 	{ label: "Dokumen Rasmi", desc: "SOP, manual, minit.", Icon: IconFile },
 	{ label: "Agenda MySPD", desc: "Takwim & aktiviti.", Icon: IconCalendar },
 	{ label: "EKSA MySPD", desc: "Eviden & audit.", Icon: IconCheckCircle },
@@ -63,7 +63,15 @@ function formatTarikh(t: string | null): string {
 // Supabase sedia ada dalam portal asal (skt_lembar, bdr, profiles,
 // pengumuman) -- bukan lagi angka rekaan. Kalau jadual ini tiada/RLS
 // menyekat, kad akan papar "\u2014" (sama macam gelagat portal asal).
-export function DashboardView({ user, auth }: { user: AuthedUser; auth: ReturnType<typeof useAuth> }) {
+export function DashboardView({
+	user,
+	auth,
+	onOpenModule,
+}: {
+	user: AuthedUser;
+	auth: ReturnType<typeof useAuth>;
+	onOpenModule?: (v: "status-spd") => void;
+}) {
 	const firstName = (user.name || "").split(" ")[0] || user.name;
 	const [loading, setLoading] = useState(true);
 	const [statSpd, setStatSpd] = useState<number | null>(null);
@@ -255,8 +263,13 @@ export function DashboardView({ user, auth }: { user: AuthedUser; auth: ReturnTy
 						initial={fadeUpHidden}
 						animate={fadeUpShow}
 						transition={useDelay(0.4 + i * 0.03)}
-						title="Modul ini belum dibina dalam remake teras ini"
-						className="flex cursor-not-allowed items-center gap-3 rounded-lg border border-border bg-canvas p-3.5 opacity-70 shadow-sm"
+						onClick={m.view && onOpenModule ? () => onOpenModule(m.view as "status-spd") : undefined}
+						title={m.view ? undefined : "Modul ini belum dibina dalam remake teras ini"}
+						className={
+							m.view
+								? "flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-canvas p-3.5 shadow-sm transition-colors hover:border-accent"
+								: "flex cursor-not-allowed items-center gap-3 rounded-lg border border-border bg-canvas p-3.5 opacity-70 shadow-sm"
+						}
 					>
 						<div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[9px] bg-surface text-primary">
 							<m.Icon className="h-4 w-4" />
