@@ -20,7 +20,7 @@ export function PageHeader({
 	actions?: ReactNode;
 }) {
 	return (
-		<div className="flex flex-wrap items-start justify-between gap-3 pb-5">
+		<div className="flex flex-wrap items-start justify-between gap-3 pb-6">
 			<div className="min-w-0">
 				<div className="mb-1 flex items-center gap-1.5 text-[11.5px] font-medium text-secondary">
 					{crumbs.map((c, i) => (
@@ -31,10 +31,10 @@ export function PageHeader({
 					))}
 				</div>
 				<div className="flex items-center gap-2.5">
-					<h1 className="text-[19px] font-bold tracking-[-0.015em] text-primary">{title}</h1>
+					<h1 className="text-grad text-[24px] font-extrabold tracking-[-0.02em]">{title}</h1>
 					{meta}
 				</div>
-				{description && <p className="mt-1 text-[12.5px] text-secondary">{description}</p>}
+				{description && <p className="mt-1 text-[13.5px] text-secondary">{description}</p>}
 			</div>
 			{actions && <div className="flex shrink-0 items-center gap-2 pt-1">{actions}</div>}
 		</div>

@@ -36,11 +36,11 @@ export function Topbar({
 	return (
 		<div className="flex h-14 items-center justify-between glass-topbar px-7">
 			{title ? (
-				<div className="text-[12.5px] font-semibold text-secondary">
+				<div className="text-[13.5px] font-semibold text-secondary">
 					{title.crumb} / <b className="font-bold text-primary">{title.active}</b>
 				</div>
 			) : (
-				<div className="flex w-[280px] items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-[12.5px] text-secondary">
+				<div className="flex w-[280px] items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-[13.5px] text-secondary">
 					<IconSearch className="h-3.5 w-3.5" />
 					Cari dokumen, SOP, staf&hellip;
 				</div>

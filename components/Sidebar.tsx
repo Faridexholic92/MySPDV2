@@ -97,7 +97,7 @@ function NavButton({
 			onClick={() => onNavigate(view)}
 			className={`mb-0.5 flex w-full items-center gap-2.5 rounded-lg border-l-2 px-2.5 py-2 text-left text-[13px] font-semibold ${
 				active
-					? "border-accent bg-accent/[0.14] text-white"
+					? "nav-active border-transparent text-white"
 					: "border-transparent text-white/75 hover:bg-white/[0.04]"
 			}`}
 		>
@@ -143,7 +143,7 @@ export function Sidebar({
 				onClick={() => onNavigate("dashboard")}
 				className={`mb-0.5 flex w-full items-center gap-2.5 rounded-lg border-l-2 px-2.5 py-2 text-left text-[13px] font-semibold ${
 					view === "dashboard"
-						? "border-accent bg-accent/[0.14] text-white"
+						? "nav-active border-transparent text-white"
 						: "border-transparent text-white/75 hover:bg-white/[0.04]"
 				}`}
 			>
@@ -171,7 +171,7 @@ export function Sidebar({
 						onClick={() => onNavigate("admin")}
 						className={`mb-0.5 flex w-full items-center gap-2.5 rounded-lg border-l-2 px-2.5 py-2 text-left text-[13px] font-semibold ${
 							view === "admin"
-								? "border-accent bg-accent/[0.14] text-white"
+								? "nav-active border-transparent text-white"
 								: "border-transparent text-white/75 hover:bg-white/[0.04]"
 						}`}
 					>

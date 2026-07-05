@@ -70,7 +70,7 @@ export function ForgotPasswordModal({
 						<IconX className="h-4 w-4" />
 					</button>
 				</div>
-				<label className="mb-1.5 block text-[12.5px] font-bold">Email</label>
+				<label className="mb-1.5 block text-[13.5px] font-bold">Email</label>
 				<input
 					type="email"
 					value={email}

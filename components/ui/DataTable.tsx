@@ -41,9 +41,9 @@ export function DataTable<T extends { id: string | number }>({
 	return (
 		<div className="overflow-hidden rounded-lg glass-card shadow-sm">
 			<div className="overflow-x-auto">
-				<table className="w-full border-collapse text-[12.5px]">
+				<table className="w-full border-collapse text-[13.5px]">
 					<thead>
-						<tr className="border-b border-border bg-surface">
+						<tr className="glass-strip border-b border-border">
 							{columns.map((c) => (
 								<th
 									key={c.key}
@@ -70,10 +70,10 @@ export function DataTable<T extends { id: string | number }>({
 									<tr
 										key={row.id}
 										onClick={onRowClick ? () => onRowClick(row) : undefined}
-										className={`border-b border-border transition-colors last:border-0 hover:bg-surface ${onRowClick ? "cursor-pointer" : ""}`}
+										className={`border-b border-border transition-colors last:border-0 glass-row ${onRowClick ? "cursor-pointer" : ""}`}
 									>
 										{columns.map((c) => (
-											<td key={c.key} className={`px-4 py-2.5 text-primary ${alignClass[c.align ?? "left"]}`}>
+											<td key={c.key} className={`px-4 py-3 text-primary ${alignClass[c.align ?? "left"]}`}>
 												{c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? "\u2014")}
 											</td>
 										))}
@@ -85,7 +85,7 @@ export function DataTable<T extends { id: string | number }>({
 
 			{!loading && rows.length === 0 && <div className="px-4 py-10">{emptyState}</div>}
 
-			<div className="flex items-center justify-between border-t border-border bg-surface px-4 py-2">
+			<div className="flex items-center justify-between glass-strip border-t border-border px-4 py-2.5">
 				<span className="text-[11.5px] text-secondary">
 					{rows.length === 0 ? `0 ${footerLabel}` : `${safePage * pageSize + 1}\u2013${Math.min((safePage + 1) * pageSize, rows.length)} daripada ${rows.length} ${footerLabel}`}
 				</span>

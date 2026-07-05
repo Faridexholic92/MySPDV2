@@ -140,7 +140,7 @@ export function StatusOperasiView({ auth }: { auth: ReturnType<typeof useAuth> }
 	};
 
 	return (
-		<div className="mx-auto w-full max-w-[1120px] px-7 py-6">
+		<div className="mx-auto w-full max-w-[1200px] px-8 py-8">
 			<motion.div variants={fadeUp} initial="hidden" animate="show" transition={t0}>
 				<PageHeader
 					crumbs={["Operasi", "Status Operasi"]}
@@ -150,7 +150,7 @@ export function StatusOperasiView({ auth }: { auth: ReturnType<typeof useAuth> }
 					actions={
 						<button
 							onClick={exportCsv}
-							className="flex items-center gap-2 rounded-lg glass-card px-3 py-2 text-[12px] font-semibold text-primary shadow-sm transition-colors hover:bg-surface"
+							className="flex items-center gap-2 rounded-lg glass-card px-3 py-2 text-[13px] font-semibold text-primary shadow-sm transition-colors hover:bg-surface"
 						>
 							<IconFile className="h-3.5 w-3.5" />
 							Eksport CSV
@@ -168,7 +168,7 @@ export function StatusOperasiView({ auth }: { auth: ReturnType<typeof useAuth> }
 
 			<motion.div variants={fadeUp} initial="hidden" animate="show" transition={t2} className="mt-5 flex flex-wrap items-center justify-between gap-2.5">
 				<SegmentedTabs tabs={tabs} active={tab} onChange={setTab} />
-				<label className="flex w-[220px] items-center gap-2 rounded-lg glass-card px-3 py-2 text-[12px] text-secondary focus-within:border-accent">
+				<label className="flex w-[220px] items-center gap-2 rounded-lg glass-card px-3 py-2 text-[13px] text-secondary focus-within:border-accent">
 					<IconSearch className="h-3.5 w-3.5 shrink-0" />
 					<input
 						value={q}

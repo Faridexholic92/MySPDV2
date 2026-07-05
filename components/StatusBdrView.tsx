@@ -52,7 +52,7 @@ function Field({ label, value }: { label: string; value: string | null }) {
 	return (
 		<div>
 			<div className="text-[10.5px] font-bold uppercase tracking-wide text-secondary">{label}</div>
-			<div className="mt-0.5 text-[12.5px] font-medium text-primary">{value || "\u2014"}</div>
+			<div className="mt-0.5 text-[13.5px] font-medium text-primary">{value || "\u2014"}</div>
 		</div>
 	);
 }
@@ -67,7 +67,7 @@ function ProfileModal({ row, onClose }: { row: BdrRow; onClose: () => void }) {
 			<div className="w-full max-w-[560px] overflow-hidden rounded-lg glass-card shadow-card" onClick={(e) => e.stopPropagation()}>
 				<div className="flex items-center justify-between border-b border-border px-5 py-4">
 					<div className="flex items-center gap-3">
-						<span className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 text-[12px] font-bold text-secondary">
+						<span className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 text-[13px] font-bold text-secondary">
 							{initialsOf(row.nama)}
 						</span>
 						<div>
@@ -84,7 +84,7 @@ function ProfileModal({ row, onClose }: { row: BdrRow; onClose: () => void }) {
 				</div>
 				<div className="px-5 py-4">
 					<div className={`rounded-lg px-4 py-3 ${layak ? "bg-good-soft" : "bg-risk-soft"}`}>
-						<b className={`block text-[12.5px] font-extrabold ${layak ? "text-good" : "text-risk"}`}>
+						<b className={`block text-[13.5px] font-extrabold ${layak ? "text-good" : "text-risk"}`}>
 							{layak ? "LAYAK BDR" : "TIDAK LAYAK BDR"}
 						</b>
 						<span className="text-[11.5px] text-secondary">
@@ -100,7 +100,7 @@ function ProfileModal({ row, onClose }: { row: BdrRow; onClose: () => void }) {
 					{row.tugas && (
 						<div className="mt-4">
 							<div className="text-[10.5px] font-bold uppercase tracking-wide text-secondary">Deskripsi Tugas BDR</div>
-							<p className="mt-1.5 rounded-lg bg-surface px-4 py-3 text-[12.5px] leading-relaxed text-primary">{row.tugas}</p>
+							<p className="mt-1.5 rounded-lg bg-surface px-4 py-3 text-[13.5px] leading-relaxed text-primary">{row.tugas}</p>
 						</div>
 					)}
 				</div>
@@ -228,7 +228,7 @@ export function StatusBdrView({ auth }: { auth: ReturnType<typeof useAuth> }) {
 	};
 
 	return (
-		<div className="mx-auto w-full max-w-[1120px] px-7 py-6">
+		<div className="mx-auto w-full max-w-[1200px] px-8 py-8">
 			<motion.div variants={fadeUp} initial="hidden" animate="show" transition={t0}>
 				<PageHeader
 					crumbs={["Operasi", "Status BDR"]}
@@ -238,7 +238,7 @@ export function StatusBdrView({ auth }: { auth: ReturnType<typeof useAuth> }) {
 					actions={
 						<button
 							onClick={exportCsv}
-							className="flex items-center gap-2 rounded-lg glass-card px-3 py-2 text-[12px] font-semibold text-primary shadow-sm transition-colors hover:bg-surface"
+							className="flex items-center gap-2 rounded-lg glass-card px-3 py-2 text-[13px] font-semibold text-primary shadow-sm transition-colors hover:bg-surface"
 						>
 							<IconFile className="h-3.5 w-3.5" />
 							Eksport CSV
@@ -256,7 +256,7 @@ export function StatusBdrView({ auth }: { auth: ReturnType<typeof useAuth> }) {
 
 			<motion.div variants={fadeUp} initial="hidden" animate="show" transition={t2} className="mt-5 flex flex-wrap items-center justify-between gap-2.5">
 				<SegmentedTabs tabs={tabs} active={tab} onChange={setTab} />
-				<label className="flex w-[220px] items-center gap-2 rounded-lg glass-card px-3 py-2 text-[12px] text-secondary focus-within:border-accent">
+				<label className="flex w-[220px] items-center gap-2 rounded-lg glass-card px-3 py-2 text-[13px] text-secondary focus-within:border-accent">
 					<IconSearch className="h-3.5 w-3.5 shrink-0" />
 					<input
 						value={q}

@@ -56,7 +56,7 @@ export function EmptyState({
 				</span>
 			)}
 			<b className="text-[13px] font-bold text-primary">{title}</b>
-			{description && <p className="max-w-[320px] text-[12px] leading-relaxed text-secondary">{description}</p>}
+			{description && <p className="max-w-[320px] text-[13px] leading-relaxed text-secondary">{description}</p>}
 			{action && <div className="mt-2">{action}</div>}
 		</div>
 	);
@@ -82,7 +82,7 @@ export function SegmentedTabs({
 						role="tab"
 						aria-selected={is}
 						onClick={() => onChange(t.key)}
-						className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[12px] font-semibold transition-colors ${
+						className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[13px] font-semibold transition-colors ${
 							is ? "bg-canvas text-primary shadow-sm" : "text-secondary hover:text-primary"
 						}`}
 					>

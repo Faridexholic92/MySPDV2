@@ -147,7 +147,7 @@ export function AdminView({
 			>
 				<div>
 					<h1 className="mb-0.5 text-[21px] font-extrabold tracking-tight">Pengurusan Pengguna</h1>
-					<p className="text-[12.5px] text-secondary">Urus akaun staf, peranan, dan log aktiviti.</p>
+					<p className="text-[13.5px] text-secondary">Urus akaun staf, peranan, dan log aktiviti.</p>
 				</div>
 				<button
 					onClick={() => setDrawerOpen(true)}
@@ -215,7 +215,7 @@ export function AdminView({
 													{(u.nama || u.email || "U").slice(0, 2).toUpperCase()}
 												</div>
 												<div className="min-w-0">
-													<div className="truncate text-[12.5px] font-bold">{u.nama || u.email}</div>
+													<div className="truncate text-[13.5px] font-bold">{u.nama || u.email}</div>
 													<div className="truncate text-[11px] text-secondary">{u.email}</div>
 												</div>
 											</div>
@@ -276,7 +276,7 @@ export function AdminView({
 						{auditLog.map((a, i) => (
 							<div
 								key={i}
-								className={`flex gap-3 py-3 text-[12px] ${i < auditLog.length - 1 ? "border-b border-border" : ""}`}
+								className={`flex gap-3 py-3 text-[13px] ${i < auditLog.length - 1 ? "border-b border-border" : ""}`}
 							>
 								<div className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-md bg-surface-2 text-secondary">
 									<IconShield className="h-3.5 w-3.5" />

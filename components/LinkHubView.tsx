@@ -33,7 +33,7 @@ export function LinkHubView({
 	items: HubItem[];
 }) {
 	return (
-		<div className="mx-auto w-full max-w-[1120px] px-7 py-6">
+		<div className="mx-auto w-full max-w-[1200px] px-8 py-8">
 			<motion.div variants={fadeUp} initial="hidden" animate="show" transition={t0}>
 				<PageHeader crumbs={crumbs} title={title} description={description} />
 			</motion.div>
@@ -45,7 +45,7 @@ export function LinkHubView({
 						href={`${LEGACY_BASE}${it.path}`}
 						target="_blank"
 						rel="noreferrer"
-						className="group flex items-start gap-3.5 rounded-lg glass-card p-4 shadow-sm transition-colors hover:border-accent"
+						className="group glass-hover flex items-start gap-3.5 rounded-lg glass-card p-4 shadow-sm transition-colors hover:border-accent"
 					>
 						<span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-2 text-[18px]">{it.emoji}</span>
 						<span className="min-w-0 flex-1">
@@ -55,7 +55,7 @@ export function LinkHubView({
 									{"\u2197"}
 								</span>
 							</span>
-							<span className="mt-0.5 block text-[12px] leading-relaxed text-secondary">{it.desc}</span>
+							<span className="mt-0.5 block text-[13px] leading-relaxed text-secondary">{it.desc}</span>
 							<span className="mt-2 inline-block rounded-md bg-surface-2 px-2 py-[3px] text-[10.5px] font-bold uppercase tracking-wide text-secondary">
 								Portal Legasi
 							</span>
@@ -64,7 +64,7 @@ export function LinkHubView({
 				))}
 			</motion.div>
 
-			<motion.div variants={fadeUp} initial="hidden" animate="show" transition={t1} className="mt-5 rounded-lg border border-border bg-surface px-4 py-3 text-[12px] text-secondary">
+			<motion.div variants={fadeUp} initial="hidden" animate="show" transition={t1} className="mt-5 rounded-lg border border-border bg-surface px-4 py-3 text-[13px] text-secondary">
 				Kandungan modul ini masih dihoskan di portal asal. Pautan dibuka dalam tab baharu; migrasi penuh boleh dilakukan berperingkat tanpa mengganggu operasi.
 			</motion.div>
 		</div>

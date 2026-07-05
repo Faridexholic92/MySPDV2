@@ -130,7 +130,7 @@ export function LoginScreen({ auth }: { auth: ReturnType<typeof useAuth> }) {
 								initial={alertInitial}
 								animate={alertAnimate}
 								exit={alertInitial}
-								className="mb-4 flex items-start gap-2 overflow-hidden rounded-[9px] border border-risk/30 bg-risk-soft px-2.5 py-2.5 text-[12.5px] text-risk"
+								className="mb-4 flex items-start gap-2 overflow-hidden rounded-[9px] border border-risk/30 bg-risk-soft px-2.5 py-2.5 text-[13.5px] text-risk"
 							>
 								<IconAlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
 								<span>{auth.error}</span>

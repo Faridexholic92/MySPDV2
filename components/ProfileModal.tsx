@@ -94,7 +94,7 @@ export function ProfileModal({
 				<div className="space-y-3">
 					{fields.map(([label, value, setter]) => (
 						<div key={label}>
-							<label className="mb-1.5 block text-[12.5px] font-bold">{label}</label>
+							<label className="mb-1.5 block text-[13.5px] font-bold">{label}</label>
 							<input
 								value={value}
 								onChange={(e) => setter(e.target.value)}

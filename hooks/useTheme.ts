@@ -3,11 +3,11 @@
 import { useCallback, useEffect, useState } from "react";
 
 export function useTheme() {
-	const [theme, setThemeState] = useState<"dark" | "light">("light");
+	const [theme, setThemeState] = useState<"dark" | "light">("dark");
 
 	useEffect(() => {
 		const saved = localStorage.getItem("myspdTheme");
-		const initial = saved === "dark" ? "dark" : "light";
+		const initial = saved === "light" ? "light" : "dark";
 		setThemeState(initial);
 		document.documentElement.classList.toggle("dark", initial === "dark");
 	}, []);

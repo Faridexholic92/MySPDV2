@@ -66,19 +66,19 @@ export function StatCard({
 	Icon?: ComponentType<{ className?: string }>;
 }) {
 	return (
-		<div className="rounded-lg glass-card p-4 shadow-sm">
+		<div className="rounded-lg glass-card p-5 shadow-sm">
 			<div className="flex items-center justify-between gap-2">
 				<span className="text-[11.5px] font-semibold uppercase tracking-wide text-secondary">{label}</span>
 				{Icon && (
-					<span className={`flex h-7 w-7 items-center justify-center rounded-lg ${toneSoft[tone]}`}>
-						<Icon className="h-3.5 w-3.5" />
+					<span className={`flex h-9 w-9 items-center justify-center rounded-xl ${tone === "accent" ? "chip-grad" : toneSoft[tone]}`}>
+						<Icon className="h-4 w-4" />
 					</span>
 				)}
 			</div>
 			<div className="mt-2 flex items-end justify-between gap-3">
 				<div className="min-w-0">
 					<div className="flex items-baseline gap-2">
-						<span className="text-[26px] font-bold leading-none tracking-[-0.02em] text-primary">{value}</span>
+						<span className="text-[30px] font-extrabold leading-none tracking-[-0.025em] text-primary">{value}</span>
 						{delta && (
 							<span className={`text-[11.5px] font-bold ${delta.up ? "text-good" : "text-risk"}`}>
 								{delta.up ? "\u2191" : "\u2193"} {delta.value}

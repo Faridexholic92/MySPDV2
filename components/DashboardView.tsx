@@ -18,25 +18,21 @@ import {
 	IconBell,
 } from "@/components/icons";
 
-// Modul & penerangan sebenar diambil terus daripada grid "Modul Utama"
-// portal asal (index.html) supaya konsisten dengan sistem sedia ada.
 type ModuleView = Exclude<import("@/components/Sidebar").ViewKey, "dashboard" | "admin">;
 
 const MODULES: Array<{ label: string; desc: string; Icon: typeof IconActivity; view?: ModuleView }> = [
-	{ label: "Status Semasa SPD", desc: "Sistem pemantauan & ringkasan semasa.", Icon: IconActivity, view: "status-spd" },
+	{ label: "Status Semasa SPD", desc: "Pemantauan & ringkasan.", Icon: IconActivity, view: "status-spd" },
 	{ label: "Dokumen Rasmi", desc: "SOP, manual, minit.", Icon: IconFile, view: "dokumen" },
 	{ label: "Agenda MySPD", desc: "Takwim & aktiviti.", Icon: IconCalendar, view: "agenda" },
 	{ label: "EKSA MySPD", desc: "Eviden & audit.", Icon: IconCheckCircle, view: "eksa" },
 	{ label: "Perayaan", desc: "E-kad & hebahan.", Icon: IconGift, view: "perayaan" },
-	{ label: "Status Kursus", desc: "Rekod latihan & 40 jam.", Icon: IconGraduation, view: "status-kursus" },
+	{ label: "Status Kursus", desc: "Latihan & 40 jam.", Icon: IconGraduation, view: "status-kursus" },
 	{ label: "Status BDR", desc: "Rekod tugasan BDR.", Icon: IconClipboard, view: "status-bdr" },
 	{ label: "Borang 4 Jam", desc: "Kebenaran tinggal pejabat.", Icon: IconClock, view: "borang-4jam" },
-	{ label: "Status Operasi", desc: "Perhubungan & keberadaan.", Icon: IconSatellite, view: "status-operasi" },
+	{ label: "Status Operasi", desc: "Keberadaan pegawai.", Icon: IconSatellite, view: "status-operasi" },
 ];
 
-const TK_MON = [
-	"Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogos", "Sep", "Okt", "Nov", "Dis",
-];
+const TK_MON = ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogo", "Sep", "Okt", "Nov", "Dis"];
 
 type Pengumuman = { tajuk: string; tarikh: string | null; jenis: string | null; status: string | null };
 type Birthday = { nama: string; day: number; month: number };
@@ -44,11 +40,13 @@ type Birthday = { nama: string; day: number; month: number };
 const fadeUpHidden = { opacity: 0, y: 14 };
 const fadeUpShow = { opacity: 1, y: 0 };
 const easeCurve = [0.16, 1, 0.3, 1] as const;
-const skeletonPulse = "animate-pulse rounded bg-surface-2";
-
-function useDelay(seconds: number) {
-	return { duration: 0.4, delay: seconds, ease: easeCurve };
-}
+const t0 = { duration: 0.4, delay: 0, ease: easeCurve };
+const t1 = { duration: 0.4, delay: 0.06, ease: easeCurve };
+const t2 = { duration: 0.4, delay: 0.12, ease: easeCurve };
+const t3 = { duration: 0.4, delay: 0.18, ease: easeCurve };
+const t4 = { duration: 0.4, delay: 0.24, ease: easeCurve };
+const glowDot = { boxShadow: "0 0 8px rgba(79,93,255,0.8)" };
+const heroBtn = { background: "rgba(255,255,255,0.14)" };
 
 function formatTarikh(t: string | null): string {
 	if (!t) return "";
@@ -61,10 +59,9 @@ function formatTarikh(t: string | null): string {
 	}
 }
 
-// NOTE (data): Statistik dan pengumuman di bawah ditarik terus dari jadual
-// Supabase sedia ada dalam portal asal (skt_lembar, bdr, profiles,
-// pengumuman) -- bukan lagi angka rekaan. Kalau jadual ini tiada/RLS
-// menyekat, kad akan papar "\u2014" (sama macam gelagat portal asal).
+// Data ditarik terus dari jadual Supabase portal asal (skt_lembar, bdr,
+// profiles, pengumuman, agenda). Jika jadual tiada / RLS menyekat, kad
+// papar sengkang dan carta papar keadaan kosong (tidak crash).
 export function DashboardView({
 	user,
 	auth,
@@ -75,47 +72,54 @@ export function DashboardView({
 	onOpenModule?: (v: ModuleView) => void;
 }) {
 	const firstName = (user.name || "").split(" ")[0] || user.name;
-	const [loading, setLoading] = useState(true);
 	const [statSpd, setStatSpd] = useState<number | null>(null);
 	const [statBdr, setStatBdr] = useState<number | null>(null);
+	const [statBdrTotal, setStatBdrTotal] = useState<number | null>(null);
 	const [statJumlah, setStatJumlah] = useState<number | null>(null);
 	const [pengumuman, setPengumuman] = useState<Pengumuman[]>([]);
 	const [birthdays, setBirthdays] = useState<Birthday[]>([]);
+	const [agendaMonths, setAgendaMonths] = useState<number[] | null>(null);
 
 	useEffect(() => {
 		(async () => {
-			setLoading(true);
 			const sb = auth.sb;
-
 			try {
 				const r = await sb.from("skt_lembar").select("*", { count: "exact", head: true });
 				setStatSpd(typeof r.count === "number" ? r.count : null);
-			} catch {
-				setStatSpd(null);
-			}
+			} catch { setStatSpd(null); }
 			try {
 				const r = await sb.from("bdr").select("*", { count: "exact", head: true }).eq("menolak_bdr", false).gt("jarak", 8);
 				setStatBdr(typeof r.count === "number" ? r.count : null);
-			} catch {
-				setStatBdr(null);
-			}
+			} catch { setStatBdr(null); }
+			try {
+				const r = await sb.from("bdr").select("*", { count: "exact", head: true });
+				setStatBdrTotal(typeof r.count === "number" ? r.count : null);
+			} catch { setStatBdrTotal(null); }
 			try {
 				const r = await sb.from("profiles").select("*", { count: "exact", head: true });
 				setStatJumlah(typeof r.count === "number" ? r.count : null);
-			} catch {
-				setStatJumlah(null);
-			}
+			} catch { setStatJumlah(null); }
 			try {
-				const r = await sb.from("pengumuman").select("*").order("tarikh", { ascending: false }).limit(5);
+				const r = await sb.from("pengumuman").select("*").order("tarikh", { ascending: false }).limit(6);
 				if (!r.error && r.data) setPengumuman(r.data as Pengumuman[]);
-			} catch {
-				/* ignore */
-			}
+			} catch { /* ignore */ }
+			try {
+				const r = await sb.from("agenda").select("tarikh").limit(1000);
+				if (!r.error && r.data) {
+					const year = new Date().getFullYear();
+					const months = new Array(12).fill(0) as number[];
+					for (const row of r.data as Array<{ tarikh: string | null }>) {
+						if (!row.tarikh) continue;
+						const d = new Date(row.tarikh);
+						if (!isNaN(d.getTime()) && d.getFullYear() === year) months[d.getMonth()] += 1;
+					}
+					setAgendaMonths(months);
+				}
+			} catch { setAgendaMonths(null); }
 			try {
 				const r = await sb.from("profiles").select("nama,tarikh_lahir").not("tarikh_lahir", "is", null);
 				if (!r.error && r.data) {
-					const now = new Date();
-					const mon = now.getMonth() + 1;
+					const mon = new Date().getMonth() + 1;
 					const list = (r.data as Array<{ nama: string; tarikh_lahir: string }>)
 						.map((p) => {
 							const d = new Date(p.tarikh_lahir);
@@ -126,168 +130,187 @@ export function DashboardView({
 						.sort((a, b) => a.day - b.day);
 					setBirthdays(list);
 				}
-			} catch {
-				/* ignore */
-			}
-
-			setLoading(false);
+			} catch { /* ignore */ }
 		})();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const fmt = (n: number | null) => (n == null ? "\u2014" : String(n));
 	const today = new Date();
+	const tarikhPenuh = today.toLocaleDateString("ms-MY", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
-	const STATS = [
-		{ label: "Status SPD", value: fmt(statSpd), sub: "Lembar SKT Seksyen", Icon: IconActivity, tone: "accent" as const },
-		{ label: "Status BDR", value: fmt(statBdr), sub: "Layak BDR (>8km)", Icon: IconClipboard, tone: "warn" as const },
-		{ label: "Jumlah Pengguna", value: fmt(statJumlah), sub: "Keseluruhan", Icon: IconUsers, tone: "good" as const },
+	const donutPct = statBdrTotal && statBdrTotal > 0 && statBdr != null ? Math.round((statBdr / statBdrTotal) * 100) : null;
+	const CIRC = 2 * Math.PI * 52;
+	const dashOffset = donutPct == null ? CIRC : CIRC - (CIRC * donutPct) / 100;
+	const maxAgenda = agendaMonths ? Math.max(1, ...agendaMonths) : 1;
+
+	const KPI = [
+		{ label: "Staf Berdaftar", value: fmt(statJumlah), sub: "Profil aktif", Icon: IconUsers, chip: "chip-grad" },
+		{ label: "Lembar SKT", value: fmt(statSpd), sub: "Semua kategori", Icon: IconActivity, chip: "bg-good-soft text-good" },
+		{ label: "BDR Layak", value: fmt(statBdr), sub: "Jarak melebihi 8 km", Icon: IconClipboard, chip: "bg-warn-soft text-warn" },
+		{ label: "Hari Lahir", value: String(birthdays.length), sub: "Bulan ini", Icon: IconGift, chip: "bg-risk-soft text-risk" },
 	];
 
-	const toneClasses: Record<string, string> = {
-		accent: "bg-accent-soft text-accent",
-		good: "bg-good-soft text-good",
-		warn: "bg-warn-soft text-warn",
-	};
-
 	return (
-		<div className="mx-auto flex min-h-[calc(100vh-56px)] max-w-[1180px] flex-col px-7 py-7">
-			<motion.div initial={fadeUpHidden} animate={fadeUpShow} transition={useDelay(0)} className="mb-5">
-				<h1 className="mb-0.5 text-[21px] font-extrabold tracking-tight">Selamat kembali, {firstName}.</h1>
-				<p className="text-[12.5px] text-secondary">
-					{today.toLocaleDateString("ms-MY", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
-				</p>
-			</motion.div>
-
-			<div className="mb-6 grid grid-cols-1 gap-3.5 sm:grid-cols-3">
-				{STATS.map((s, i) => (
-					<motion.div
-						key={s.label}
-						initial={fadeUpHidden}
-						animate={fadeUpShow}
-						transition={useDelay(0.06 + i * 0.05)}
-						className="rounded-lg glass-card p-4 shadow-sm"
-					>
-						<div className="mb-2 flex items-center justify-between">
-							<span className="text-[11px] font-bold uppercase tracking-wide text-secondary">{s.label}</span>
-							<div className={`flex h-7 w-7 items-center justify-center rounded-md ${toneClasses[s.tone]}`}>
-								<s.Icon className="h-3.5 w-3.5" />
-							</div>
-						</div>
-						{loading ? (
-							<div className={`h-7 w-14 ${skeletonPulse}`} />
-						) : (
-							<b className="block text-[23px] font-extrabold tracking-tight">{s.value}</b>
-						)}
-						<span className="text-[11px] text-secondary">{s.sub}</span>
-					</motion.div>
-				))}
-			</div>
-
-			<div className="mb-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
-				<motion.div
-					initial={fadeUpHidden}
-					animate={fadeUpShow}
-					transition={useDelay(0.24)}
-					className="rounded-lg glass-card p-5 shadow-sm"
-				>
-					<h2 className="mb-3 flex items-center gap-2 text-[13.5px] font-extrabold">
-						<IconBell className="h-3.5 w-3.5 text-secondary" />
-						Pengumuman Terkini
-					</h2>
-					{loading ? (
-						<div className="space-y-2">
-							{[0, 1, 2].map((i) => (
-								<div key={i} className={`h-10 ${skeletonPulse}`} />
-							))}
-						</div>
-					) : pengumuman.length === 0 ? (
-						<div className="py-6 text-center text-xs text-secondary">Tiada pengumuman.</div>
-					) : (
-						pengumuman.map((p, i) => (
-							<div key={i} className={`py-2.5 ${i < pengumuman.length - 1 ? "border-b border-border" : ""}`}>
-								<b className="block text-[12.5px] font-bold">{p.tajuk || "-"}</b>
-								<span className="text-[11px] text-secondary">
-									{formatTarikh(p.tarikh)}
-									{p.status ? ` \u2022 ${p.status}` : ""}
-								</span>
-							</div>
-						))
-					)}
-				</motion.div>
-
-				<motion.div
-					initial={fadeUpHidden}
-					animate={fadeUpShow}
-					transition={useDelay(0.3)}
-					className="rounded-lg glass-card p-5 shadow-sm"
-				>
-					<h2 className="mb-3 text-[13.5px] font-extrabold">Hari Lahir Bulan Ini</h2>
-					{loading ? (
-						<div className="space-y-2">
-							{[0, 1].map((i) => (
-								<div key={i} className={`h-8 ${skeletonPulse}`} />
-							))}
-						</div>
-					) : birthdays.length === 0 ? (
-						<div className="py-6 text-center text-xs text-secondary">Tiada hari lahir bulan ini.</div>
-					) : (
-						birthdays.map((b, i) => {
-							const isToday = b.day === today.getDate();
-							return (
-								<div key={i} className={`py-2 ${i < birthdays.length - 1 ? "border-b border-border" : ""}`}>
-									<b className="block text-[12.5px] font-bold">
-										{b.nama} {isToday ? "\ud83c\udf89" : ""}
-									</b>
-									<span className="text-[11px] text-secondary">
-										Hari Lahir {b.day} {TK_MON[b.month - 1]}
-										{isToday ? " \u2014 Hari Ini!" : ""}
-									</span>
-								</div>
-							);
-						})
-					)}
-				</motion.div>
-			</div>
-
-			<motion.h2
-				initial={fadeUpHidden}
-				animate={fadeUpShow}
-				transition={useDelay(0.36)}
-				className="mb-3 text-[13.5px] font-extrabold"
-			>
-				Modul Utama
-			</motion.h2>
-			<div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-				{MODULES.map((m, i) => (
-					<motion.div
-						key={m.label}
-						initial={fadeUpHidden}
-						animate={fadeUpShow}
-						transition={useDelay(0.4 + i * 0.03)}
-						onClick={m.view && onOpenModule ? () => onOpenModule(m.view!) : undefined}
-						title={m.view ? undefined : "Modul ini belum dibina dalam remake teras ini"}
-						className={
-							m.view
-								? "flex cursor-pointer items-center gap-3 rounded-lg glass-card p-3.5 shadow-sm transition-colors hover:border-accent"
-								: "flex cursor-not-allowed items-center gap-3 rounded-lg glass-card p-3.5 opacity-70 shadow-sm"
-						}
-					>
-						<div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[9px] bg-surface text-primary">
-							<m.Icon className="h-4 w-4" />
-						</div>
+		<div className="mx-auto w-full max-w-[1240px] px-8 py-8">
+			<div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.55fr,1fr]">
+				<motion.div initial={fadeUpHidden} animate={fadeUpShow} transition={t0} className="hero-grad relative flex flex-col justify-between overflow-hidden rounded-2xl p-6 text-white">
+					<div>
+						<span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wider text-white/90 backdrop-blur">
+							<span className="h-1.5 w-1.5 rounded-full bg-cyan-300" /> Sesi {today.getFullYear()} · Langsung
+						</span>
+						<h1 className="mt-3 text-[27px] font-extrabold leading-tight tracking-tight">Selamat kembali, {firstName} 👋</h1>
+						<p className="mt-1 max-w-[420px] text-[13px] leading-relaxed text-white/65">{tarikhPenuh}. Semua statistik seksyen dikemas kini terus dari pangkalan data.</p>
+					</div>
+					<div className="mt-6 flex flex-wrap items-end justify-between gap-4">
 						<div>
-							<h3 className="text-[12.5px] font-bold">{m.label}</h3>
-							<p className="text-[11px] text-secondary">{m.desc}</p>
+							<div className="text-[11px] font-bold uppercase tracking-wider text-white/55">Jumlah Lembar SKT</div>
+							<div className="mt-1 flex items-baseline gap-2.5">
+								<span className="text-[40px] font-extrabold leading-none tracking-[-0.03em]">{fmt(statSpd)}</span>
+								<span className="rounded-md bg-emerald-400/20 px-1.5 py-0.5 text-[11.5px] font-bold text-emerald-300">Sesi ini</span>
+							</div>
 						</div>
-					</motion.div>
-				))}
+						<button onClick={() => onOpenModule && onOpenModule("status-spd")} className="rounded-lg px-4 py-2.5 text-[13px] font-bold text-white backdrop-blur transition-colors hover:bg-white/20" style={heroBtn}>
+							Buka Status SPD →
+						</button>
+					</div>
+				</motion.div>
+				<motion.div initial={fadeUpHidden} animate={fadeUpShow} transition={t1} className="grid grid-cols-2 gap-4">
+					{KPI.map((k) => (
+						<div key={k.label} className="glass-card flex flex-col justify-between rounded-2xl p-4">
+							<div className="flex items-center justify-between gap-2">
+								<span className="text-[10.5px] font-bold uppercase tracking-wider text-secondary">{k.label}</span>
+								<span className={`flex h-8 w-8 items-center justify-center rounded-lg ${k.chip}`}><k.Icon className="h-4 w-4" /></span>
+							</div>
+							<div className="mt-2">
+								<div className="text-[24px] font-extrabold leading-none tracking-[-0.02em] text-primary">{k.value}</div>
+								<div className="mt-1 text-[11.5px] text-secondary">{k.sub}</div>
+							</div>
+						</div>
+					))}
+				</motion.div>
 			</div>
 
-			<footer className="mt-auto flex flex-col gap-1 border-t border-border pt-4 text-[11px] text-secondary sm:flex-row sm:items-center sm:justify-between">
-				<span>&copy; 2026 MYSPD. Hakcipta Terpelihara.</span>
-				<span>Versi 2.0.0 &middot; Seksyen Penawanan Data</span>
-			</footer>
+			<div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.55fr,1fr]">
+				<motion.div initial={fadeUpHidden} animate={fadeUpShow} transition={t2} className="glass-card rounded-2xl p-5">
+					<div className="flex items-center justify-between gap-2">
+						<div>
+							<h2 className="text-[15px] font-bold text-primary">Agenda Mengikut Bulan</h2>
+							<p className="text-[11.5px] text-secondary">Taburan aktiviti tahun {today.getFullYear()}</p>
+						</div>
+						<span className="rounded-md bg-accent-soft px-2 py-1 text-[10.5px] font-bold uppercase tracking-wider text-accent">Auto</span>
+					</div>
+					{agendaMonths ? (
+						<div className="mt-5 flex h-[150px] items-end gap-2">
+							{agendaMonths.map((v, i) => {
+								const hStyle = { height: `${Math.max(4, Math.round((v / maxAgenda) * 100))}%` };
+								return (
+									<div key={TK_MON[i]} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
+										{v > 0 && <span className="text-[10.5px] font-bold text-secondary">{v}</span>}
+										<div className={`w-full max-w-[26px] rounded-t-md ${v > 0 ? "bar-grad" : "bar-dim"}`} style={hStyle} />
+										<span className="text-[10px] font-semibold text-secondary">{TK_MON[i]}</span>
+									</div>
+								);
+							})}
+						</div>
+					) : (
+						<div className="mt-5 flex h-[150px] items-center justify-center text-[13.5px] text-secondary">Tiada data agenda dapat dimuatkan.</div>
+					)}
+				</motion.div>
+				<motion.div initial={fadeUpHidden} animate={fadeUpShow} transition={t3} className="glass-card flex flex-col rounded-2xl p-5">
+					<h2 className="text-[15px] font-bold text-primary">Liputan BDR</h2>
+					<p className="text-[11.5px] text-secondary">Pegawai layak berbanding keseluruhan</p>
+					<div className="flex flex-1 items-center justify-center gap-6 pt-3">
+						<div className="relative h-[130px] w-[130px]">
+							<svg viewBox="0 0 130 130" className="h-full w-full -rotate-90">
+								<defs>
+									<linearGradient id="donutGrad" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0%" stopColor="#4f5dff" />
+										<stop offset="100%" stopColor="#22d3ee" />
+									</linearGradient>
+								</defs>
+								<circle cx="65" cy="65" r="52" fill="none" strokeWidth="12" className="stroke-surface-2" />
+								<circle cx="65" cy="65" r="52" fill="none" strokeWidth="12" strokeLinecap="round" stroke="url(#donutGrad)" strokeDasharray={CIRC} strokeDashoffset={dashOffset} />
+							</svg>
+							<div className="absolute inset-0 flex flex-col items-center justify-center">
+								<span className="text-[26px] font-extrabold leading-none tracking-tight text-primary">{donutPct == null ? "\u2014" : `${donutPct}%`}</span>
+								<span className="mt-1 text-[10px] font-bold uppercase tracking-wider text-secondary">Layak</span>
+							</div>
+						</div>
+						<div className="space-y-2.5">
+							<div>
+								<div className="text-[18px] font-extrabold leading-none text-primary">{fmt(statBdr)}</div>
+								<div className="mt-0.5 text-[11px] text-secondary">Layak (&gt;8 km)</div>
+							</div>
+							<div>
+								<div className="text-[18px] font-extrabold leading-none text-primary">{fmt(statBdrTotal)}</div>
+								<div className="mt-0.5 text-[11px] text-secondary">Keseluruhan rekod</div>
+							</div>
+						</div>
+					</div>
+				</motion.div>
+			</div>
+
+			<div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.55fr,1fr]">
+				<motion.div initial={fadeUpHidden} animate={fadeUpShow} transition={t3} className="glass-card rounded-2xl p-5">
+					<div className="flex items-center justify-between">
+						<h2 className="text-[15px] font-bold text-primary">Aktiviti Terkini</h2>
+						<IconBell className="h-4 w-4 text-secondary" />
+					</div>
+					{pengumuman.length === 0 ? (
+						<p className="mt-4 text-[13.5px] text-secondary">Tiada pengumuman terkini.</p>
+					) : (
+						<div className="mt-3 space-y-1">
+							{pengumuman.map((p, i) => (
+								<div key={i} className="flex items-start gap-3 rounded-lg px-2 py-2">
+									<span className="mt-1 flex h-2 w-2 shrink-0 rounded-full bg-accent" style={glowDot} />
+									<div className="min-w-0 flex-1">
+										<div className="truncate text-[13px] font-semibold text-primary">{p.tajuk}</div>
+										<div className="text-[11px] text-secondary">{formatTarikh(p.tarikh)}{p.jenis ? ` · ${p.jenis}` : ""}</div>
+									</div>
+								</div>
+							))}
+						</div>
+					)}
+				</motion.div>
+				<motion.div initial={fadeUpHidden} animate={fadeUpShow} transition={t4} className="glass-card rounded-2xl p-5">
+					<h2 className="text-[15px] font-bold text-primary">Hari Lahir Bulan Ini</h2>
+					{birthdays.length === 0 ? (
+						<p className="mt-4 text-[13.5px] text-secondary">Tiada hari lahir bulan ini.</p>
+					) : (
+						<div className="mt-3 space-y-2">
+							{birthdays.slice(0, 6).map((b) => (
+								<div key={b.nama} className="flex items-center gap-3">
+									<span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-risk-soft text-[14px]">🎂</span>
+									<div className="min-w-0">
+										<div className="truncate text-[13px] font-semibold text-primary">{b.nama}</div>
+										<div className="text-[11px] text-secondary">{b.day} {TK_MON[b.month - 1]}</div>
+									</div>
+								</div>
+							))}
+						</div>
+					)}
+				</motion.div>
+			</div>
+
+			<motion.div initial={fadeUpHidden} animate={fadeUpShow} transition={t4} className="mt-7">
+				<h2 className="mb-3 text-[15px] font-bold text-primary">Modul Utama</h2>
+				<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+					{MODULES.map((m) => (
+						<button
+							key={m.label}
+							onClick={() => m.view && onOpenModule && onOpenModule(m.view)}
+							className="glass-hover glass-card flex items-center gap-3 rounded-xl p-4 text-left"
+						>
+							<span className="chip-grad flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"><m.Icon className="h-4 w-4" /></span>
+							<span className="min-w-0">
+								<span className="block truncate text-[13.5px] font-bold text-primary">{m.label}</span>
+								<span className="block truncate text-[11.5px] text-secondary">{m.desc}</span>
+							</span>
+						</button>
+					))}
+				</div>
+			</motion.div>
 		</div>
 	);
 }
