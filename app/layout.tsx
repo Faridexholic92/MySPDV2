@@ -1,0 +1,1 @@
+import './globals.css';export const metadata={title:'Portal MySPD',description:'Command Center Seksyen Penawanan Data'};export default function Layout({children}:{children:React.ReactNode}){return <html lang="ms"><body>{children}</body></html>}

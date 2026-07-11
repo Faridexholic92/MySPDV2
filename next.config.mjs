@@ -1,0 +1,2 @@
+const routes=['agenda-myspd','borang-4jam','eksa-myspd','perayaan','portal-dokumen-rasmi','santai-cafe','status-bdr','status-kursus','status-operasi','status-semasa-spd'];
+const nextConfig={poweredByHeader:false,async rewrites(){return [...routes.map(r=>({source:`/${r}/`,destination:`/legacy/${r}/index.html`})),...routes.map(r=>({source:`/${r}/:path*/`,destination:`/legacy/${r}/:path*/index.html`})),{source:'/img/:path*',destination:'/legacy/img/:path*'},{source:'/assets/:path*',destination:'/legacy/assets/:path*'}]}};export default nextConfig;
