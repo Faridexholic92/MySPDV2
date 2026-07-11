@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BDR • SEKSYEN PENAWANAN DATA | 2026</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap');
+
+:root {
+--primary-blue: #3b82f6;
+--accent-cyan: #06b6d4;
+--success-green: #10b981;
+--danger-red: #f43f5e;
+--warning-gold: #f59e0b;
+--bg-gradient-start: #0f172a;
+--bg-gradient-end: #1e293b;
+--glass-bg: rgba(255, 255, 255, 0.03);
+--glass-border: rgba(255, 255, 255, 0.08);
+--text-main: #f8fafc;
+--text-muted: #94a3b8;
+}
+
+body {
+font-family: 'Inter', sans-serif;
+background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+background-attachment: fixed;
+color: var(--text-main);
+min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+font-family: 'Poppins', sans-serif;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
+::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary-blue); }
+
+.header-title {
+background: linear-gradient(90deg, #ffffff, var(--accent-cyan));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+letter-spacing: 1px;
+}
+
+.navbar {
+background: rgba(15, 23, 42, 0.8) !important;
+backdrop-filter: blur(20px);
+border-bottom: 1px solid var(--glass-border);
+}
+
+.card {
+background: var(--glass-bg);
+backdrop-filter: blur(16px);
+-webkit-backdrop-filter: blur(16px);
+border: 1px solid var(--glass-border);
+box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+border-radius: 16px;
+overflow: hidden;
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+transform: translateY(-4px);
+box-shadow: 0 12px 32px rgba(6, 182, 212, 0.15);
+border-color: rgba(6, 182, 212, 0.3);
+}
+
+.card-header {
+background: rgba(255, 255, 255, 0.02);
+border-bottom: 1px solid var(--glass-border);
+}
+
+.table-responsive {
+overflow-x: auto;
+-webkit-overflow-scrolling: touch;
+padding: 0 15px 15px 15px;
+}
+
+table {
+border-collapse: separate !important;
+border-spacing: 0 8px !important;
+min-width: 800px;
+}
+
+table th {
+background: rgba(15, 23, 42, 0.95) !important;
+color: var(--text-muted) !important;
+font-weight: 600;
+font-size: 0.85rem;
+text-transform: uppercase;
+letter-spacing: 1px;
+border: none !important;
+padding: 16px 12px !important;
+position: sticky;
+top: 0;
+z-index: 10;
+}
+
+.table-hover tbody tr {
+transition: all 0.2s ease;
+box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.table-hover tbody tr:hover {
+transform: scale(1.01);
+background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+table td {
+border: none !important;
+background: rgba(30, 41, 59, 0.5) !important;
+padding: 16px 12px !important;
+color: var(--text-main);
+vertical-align: middle;
+border-top: 1px solid rgba(255,255,255,0.02);
+border-bottom: 1px solid rgba(255,255,255,0.02);
+}
+
+table td:first-child {
+border-top-left-radius: 12px;
+border-bottom-left-radius: 12px;
+border-left: 1px solid rgba(255,255,255,0.02);
+}
+table td:last-child {
+border-top-right-radius: 12px;
+border-bottom-right-radius: 12px;
+border-right: 1px solid rgba(255,255,255,0.02);
+}
+
+.layak td:first-child { position: relative; }
+.layak td:first-child::before {
+content: ''; position: absolute; left: 0; top: 20%; height: 60%; width: 4px; background: var(--success-green); border-radius: 0 4px 4px 0;
+}
+.tidak td:first-child { position: relative; }
+.tidak td:first-child::before {
+content: ''; position: absolute; left: 0; top: 20%; height: 60%; width: 4px; background: var(--danger-red); border-radius: 0 4px 4px 0;
+}
+
+.search-input {
+background: rgba(15, 23, 42, 0.6) !important;
+border: 1px solid var(--glass-border) !important;
+color: white !important;
+border-radius: 30px;
+padding-left: 35px;
+font-size: 0.9rem;
+box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important;
+transition: border-color 0.3s;
+}
+.search-input:focus { border-color: var(--accent-cyan) !important; outline: none; }
+
+.input-dark {
+background: rgba(15, 23, 42, 0.6) !important;
+border: 1px solid var(--glass-border) !important;
+color: var(--text-main) !important;
+border-radius: 10px;
+}
+.input-dark:focus { border-color: var(--accent-cyan) !important; box-shadow: none !important; }
+
+.modal-content {
+background: rgba(15, 23, 42, 0.85);
+backdrop-filter: blur(25px);
+-webkit-backdrop-filter: blur(25px);
+border: 1px solid rgba(255,255,255,0.1);
+box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+border-radius: 20px;
+}
+.modal-header { border-bottom: 1px solid var(--glass-border); }
+.modal-footer { border-top: 1px solid var(--glass-border); }
+
+.tugas-box {
+background: rgba(0,0,0,0.2);
+padding: 20px;
+border-radius: 12px;
+max-height: 350px;
+overflow-y: auto;
+white-space: pre-line;
+border: 1px solid var(--glass-border);
+color: #cbd5e1;
+font-size: 0.95rem;
+line-height: 1.6;
+}
+
+.info-label { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;}
+.info-value { color: var(--text-main); font-size: 1.05rem; margin-bottom: 16px; font-weight: 500;}
+
+.chart-container {
+position: relative;
+height: 260px;
+width: 100%;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.elegant-ring {
+position: absolute;
+width: 220px;
+height: 220px;
+border-radius: 50%;
+border: 1px solid rgba(6, 182, 212, 0.1);
+border-top-color: rgba(6, 182, 212, 0.6);
+border-bottom-color: rgba(59, 130, 246, 0.4);
+animation: elegantSpin 8s linear infinite;
+z-index: 0;
+pointer-events: none;
+margin-top: -38px;
+}
+
+.elegant-glow {
+position: absolute;
+width: 180px;
+height: 180px;
+border-radius: 50%;
+background: radial-gradient(circle, rgba(6, 182, 212, 0.05) 0%, transparent 70%);
+z-index: 0;
+pointer-events: none;
+animation: pulseGlow 4s ease-in-out infinite alternate;
+margin-top: -38px;
+}
+
+#pieChart {
+z-index: 1;
+filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes elegantSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes pulseGlow { 0% { transform: scale(0.9); opacity: 0.5; } 100% { transform: scale(1.1); opacity: 1; } }
+
+.badge-premium-success { background: rgba(16, 185, 129, 0.15); color: var(--success-green); border: 1px solid rgba(16, 185, 129, 0.3); }
+.badge-premium-danger { background: rgba(244, 63, 94, 0.15); color: var(--danger-red); border: 1px solid rgba(244, 63, 94, 0.3); }
+
+@media (max-width: 768px) {
+.display-4 { font-size: 2rem; }
+.stat-card h2 { font-size: 2rem; }
+}
+
+.profile-img-header {
+width: 40px;
+height: 40px;
+border-radius: 50%;
+object-fit: cover;
+border: 2px solid var(--accent-cyan);
+margin-right: 10px;
+}
+
+/* ===== AUTH GUARD ===== */
+#authGuard {
+position: fixed; inset: 0; z-index: 200000;
+background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+color: var(--text-main);
+}
+
+/* ===== LIGHT THEME (segerak dgn portal) ===== */
+body.theme-light {
+--bg-gradient-start: #eef2f7;
+--bg-gradient-end: #dbe3ee;
+--glass-bg: rgba(255, 255, 255, 0.72);
+--glass-border: rgba(15, 23, 42, 0.10);
+--text-main: #1e293b;
+--text-muted: #64748b;
+}
+body.theme-light .header-title { background: linear-gradient(90deg, #0f172a, #0891b2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+body.theme-light .navbar { background: rgba(255,255,255,0.85) !important; }
+body.theme-light .navbar .text-white { color: #1e293b !important; }
+body.theme-light table th { background: rgba(241,245,249,0.97) !important; color: #475569 !important; }
+body.theme-light table td { background: rgba(255,255,255,0.75) !important; color: #1e293b; }
+body.theme-light .table-hover tbody tr:hover { background-color: rgba(15,23,42,0.04) !important; }
+body.theme-light .modal-content { background: rgba(255,255,255,0.94); color: #1e293b; }
+body.theme-light .modal-content .btn-close { filter: none; }
+body.theme-light .tugas-box { background: rgba(0,0,0,0.04); color: #334155; }
+body.theme-light .search-input, body.theme-light .input-dark { background: rgba(255,255,255,0.92) !important; color: #1e293b !important; }
+body.theme-light .info-value, body.theme-light .text-white { color: #1e293b !important; }
+body.theme-light .text-light { color: #475569 !important; }
+
+/* ===== TOAST ===== */
+#toastWrap { position: fixed; top: 85px; right: 20px; z-index: 100000; display: flex; flex-direction: column; gap: 10px; }
+.toast-item { min-width: 260px; max-width: 340px; padding: 13px 18px; border-radius: 12px; color: #fff; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.3); backdrop-filter: blur(10px); display: flex; align-items: center; gap: 10px; animation: toastIn .3s ease; }
+.toast-ok { background: rgba(16,185,129,0.95); }
+.toast-err { background: rgba(244,63,94,0.95); }
+.toast-info { background: rgba(6,182,212,0.95); }
+@keyframes toastIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+</style>
+</head>
+<body>
+<div id="toastWrap"></div>
+
+<div id="authGuard">
+<div class="spinner-border text-info" role="status"></div>
+<div class="fw-medium">Mengesahkan sesi…</div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top py-3">
+<div class="container">
+<a class="navbar-brand fw-bold fs-5 d-flex align-items-center" href="/" style="text-decoration: none;">
+<i class="fas fa-arrow-left me-3" style="color: var(--accent-cyan); font-size: 1.2rem; transition: transform 0.3s;" onmouseover="this.style.transform='translateX(-5px)'" onmouseout="this.style.transform='translateX(0)'"></i>
+<span class="text-white" style="transition: color 0.3s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='white'">KEMBALI KE PANGKALAN UTAMA</span>
+</a>
+<div class="d-flex align-items-center gap-2">
+<button id="themeToggle" onclick="toggleTheme()" class="btn btn-sm d-flex align-items-center justify-content-center" title="Tukar tema" style="border:1px solid var(--glass-border); border-radius:50%; width:38px; height:38px; color:var(--text-main); background:var(--glass-bg);">
+<i id="themeIcon" class="fas fa-moon"></i>
+</button>
+<span class="badge bg-warning text-dark admin-only" style="display:none"><i class="fas fa-shield-alt me-1"></i>SUPERADMIN</span>
+<span class="navbar-text fs-6 text-light opacity-75 d-none d-md-block" style="font-family: 'Inter', sans-serif;">Seksyen Penawanan Data • 2026</span>
+</div>
+</div>
+</nav>
+
+<div class="container pt-5 mt-5">
+<header class="text-center mb-5 mt-3">
+<h1 class="display-4 fw-bold header-title mb-2">STATUS BDR</h1>
+<p class="text-light opacity-75 fs-6">Status Kelayakan Kakitangan SPD</p>
+</header>
+
+<div class="row g-4 mb-5">
+<div class="col-6 col-md-3">
+<div class="card stat-card text-center h-100 p-4">
+<i class="fas fa-users fa-2x mb-3" style="color:var(--primary-blue)"></i>
+<h2 id="kad-total" class="fw-bold text-white m-0">--</h2>
+<p class="text-light opacity-75 m-0 small fw-medium mt-2 text-uppercase">Orang Kakitangan</p>
+</div>
+</div>
+<div class="col-6 col-md-3">
+<div class="card stat-card text-center h-100 p-4">
+<i class="fas fa-shield-check fa-2x mb-3" style="color:var(--success-green)"></i>
+<h2 id="kad-layak" class="fw-bold m-0" style="color: var(--success-green);">--</h2>
+<p class="text-light opacity-75 m-0 small fw-medium mt-2 text-uppercase">Orang Layak BDR</p>
+<span class="badge mt-2 mx-auto badge-premium-danger" style="font-size: 0.65rem; width: fit-content;"><i class="fas fa-info-circle me-1"></i><span id="kad-menolak">--</span> MENOLAK BDR</span>
+</div>
+</div>
+<div class="col-6 col-md-3">
+<div class="card stat-card text-center h-100 p-4">
+<i class="fas fa-ban fa-2x mb-3" style="color:var(--danger-red)"></i>
+<h2 id="kad-tidak" class="fw-bold m-0" style="color: var(--danger-red);">--</h2>
+<p class="text-light opacity-75 m-0 small fw-medium mt-2 text-uppercase">Orang Tidak Layak BDR</p>
+</div>
+</div>
+<div class="col-6 col-md-3">
+<div class="card stat-card text-center h-100 p-4">
+<i class="fas fa-map-marked-alt fa-2x mb-3" style="color:var(--warning-gold)"></i>
+<h2 id="kad-purata" class="fw-bold m-0" style="color: var(--warning-gold);">--</h2>
+<p class="text-light opacity-75 m-0 small fw-medium mt-2 text-uppercase">Purata KM</p>
+</div>
+</div>
+</div>
+
+<div class="row mb-5 g-4">
+<div class="col-lg-8">
+<div class="card h-100">
+<div class="card-header border-0 pt-4 pb-0 bg-transparent ps-4">
+<h6 class="m-0 fw-semibold text-white"><i class="fas fa-chart-donut me-2 text-info"></i> Peratusan Status BDR</h6>
+</div>
+<div class="card-body d-flex justify-content-center align-items-center">
+<div class="chart-container">
+<div class="elegant-ring"></div>
+<div class="elegant-glow"></div>
+<canvas id="pieChart"></canvas>
+</div>
+</div>
+</div>
+</div>
+<div class="col-lg-4">
+<div class="card h-100" style="background: rgba(6, 182, 212, 0.02);">
+<div class="card-body p-4 d-flex flex-column justify-content-center">
+<h6 class="mb-4 fw-semibold d-flex align-items-center" style="color: var(--accent-cyan);">
+<i class="fas fa-info-circle me-2"></i> Kriteria Kelayakan
+</h6>
+<div class="p-4 rounded-4" style="background:rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05);">
+<ul class="list-unstyled mb-0 text-light opacity-75 small lh-lg">
+<li class="mb-2"><i class="fas fa-check text-success me-2"></i> Jarak kediaman ke pejabat <strong style="color: var(--warning-gold);">melebihi 8 km</strong>.</li>
+<li class="mb-2"><i class="fas fa-check text-success me-2"></i> Kedudukan <strong style="color: var(--accent-cyan);">Kota Kinabalu</strong> diambil kira sebagai <strong style="color: var(--accent-cyan);">Ibu Negeri Sabah</strong>.</li>
+<li><i class="fas fa-check text-success me-2"></i> Maklumat peribadi yang didaftarkan mestilah <strong style="color: var(--success-green);">sah dan tepat</strong>.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="card mb-5">
+<div class="card-header p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+<h6 class="m-0 fw-semibold text-white"><i class="fas fa-address-book me-2 text-info"></i> Senarai Kakitangan</h6>
+<div class="position-relative w-100" style="max-width: 280px;">
+<i class="fas fa-search position-absolute top-50 translate-middle-y ms-3 text-muted"></i>
+<input type="text" id="search" class="form-control form-control-sm search-input py-2" placeholder="Carian nama atau jawatan...">
+</div>
+</div>
+<div class="card-body p-0">
+<div class="table-responsive" style="max-height: 500px;">
+<table class="table table-hover align-middle mb-0 w-100" id="dataTable">
+<thead>
+<tr>
+<th width="8%" class="text-center">Bil</th>
+<th width="32%">Nama</th>
+<th width="30%">Jawatan / Gred</th>
+<th width="15%" class="text-center">Jarak Kediaman</th>
+<th width="15%" class="text-center">Status BDR</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div class="modal fade" id="profileModal" tabindex="-1">
+<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+<div class="modal-content">
+<div class="modal-header border-0 pt-4 px-4 pb-2">
+<h5 class="modal-title fw-semibold text-white d-flex align-items-center" id="modalNama"></h5>
+<button type="button" class="btn-close btn-close-white opacity-50" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body px-4 py-3" id="modalBody"></div>
+<div class="modal-footer border-0 pb-4 px-4 pt-2">
+<button type="button" id="btnEditStatus" class="btn btn-info text-dark px-4 rounded-3 fw-semibold admin-only" style="display:none" onclick="openEditFromProfile()"><i class="fas fa-pen me-2"></i>Edit Status</button>
+<button type="button" class="btn btn-dark px-4 rounded-3 border border-secondary" data-bs-dismiss="modal">Tutup Paparan</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- EDIT MODAL (superadmin) -->
+<div class="modal fade" id="editModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header border-0 pt-4 px-4 pb-2">
+<h5 class="modal-title fw-semibold text-white"><i class="fas fa-pen-to-square me-2 text-info"></i>Edit Status BDR</h5>
+<button type="button" class="btn-close btn-close-white opacity-50" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body px-4 py-3">
+<input type="hidden" id="editId">
+<div class="mb-3">
+<label class="info-label">Nama Kakitangan</label>
+<input type="text" id="editNama" class="form-control input-dark py-2" disabled>
+</div>
+<div class="mb-3">
+<label class="info-label">Jarak Kediaman (km)</label>
+<input type="number" step="0.1" min="0" id="editJarak" class="form-control input-dark py-2">
+</div>
+<div class="form-check form-switch mt-3 ms-1">
+<input class="form-check-input" type="checkbox" id="editMenolak" role="switch">
+<label class="form-check-label text-light" for="editMenolak">Tandakan sebagai <strong class="text-danger">MENOLAK BDR</strong></label>
+</div>
+</div>
+<div class="modal-footer border-0 pb-4 px-4 pt-2">
+<button type="button" class="btn btn-dark px-4 rounded-3 border border-secondary" data-bs-dismiss="modal">Batal</button>
+<button type="button" class="btn btn-info text-dark px-4 rounded-3 fw-semibold" onclick="saveEdit()"><i class="fas fa-save me-2"></i>Simpan</button>
+</div>
+</div>
+</div>
+</div>
+
+<audio id="bgMusic" autoplay loop>
+<source src="https://files.catbox.moe/wn9c75.mp3" type="audio/mpeg">
+</audio>
+
+<button onclick="toggleMusic()" class="btn btn-dark shadow-lg px-3 py-2" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; border-radius: 30px; border: 1px solid var(--accent-cyan); backdrop-filter: blur(10px); background: rgba(15, 23, 42, 0.8);">
+<i id="musicIcon" class="fas fa-pause me-2" style="color: var(--danger-red);"></i>
+<span id="musicText" class="text-white text-sm fw-medium">Pause BGM</span>
+</button>
+
+<script>
+/* ===================== SUPABASE ===================== */
+const SB_URL = 'https://ypajirtowqqhdfmuwoxt.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwYWppcnRvd3FxaGRmbXV3b3h0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NDE0NDMsImV4cCI6MjA5NjUxNzQ0M30.OoVqJHBfBmKTUuTT16Yqjt9doLJ56WceRW90CqpH1G8'.replace(/\s/g,'');
+const sb = supabase.createClient(SB_URL, SB_ANON);
+const MENOLAK_BADGE = '<span class="badge bg-danger ms-2" style="font-size: 0.65rem;">MENOLAK BDR</span>';
+
+/* ===================== STATE ===================== */
+let bdrData = [];
+let currentUser = null;
+let isSuperadmin = false;
+let currentProfileId = null;
+let chartInst = null;
+let editModalInst = null;
+let profileModalInst = null;
+
+/* ===================== SEED DATA (21 rekod) ===================== */
+const SEED_DATA = [
+{bil:1, nama:"Sr Azrina binti Reli", jawatan:"Pengarah Ukur Seksyen (J12)", jarak:2.5, emel:"azrinareli@jupem.gov.my", telefon:"019-707 6376", alamat:"(13-1-2) Unit 202 Blok E, Grace Ville, Jalan Pantai Sembulan, 88100, Kota Kinabalu, Sabah", tugas:"1) Membantu Menyelaras, merangka dan memantau pelaksanaan aktiviti pembangunan maklumat geospatial pemetaan, infrastruktur rujukan ukur geodetik dan khidmat pengurusan Bagi memastikan pelaksanaan aktiviti-aktiviti menepati perancangan yang ditetapkan\n2) Membantu Mengkaji, merangka dan memantau pelaksanaan aktiviti pembangunan dan penerbitan maklumat dan dokumen pemetaan dan geospatial Bagi memastikan maklumat dan dokumen yang lengkap, tepat dan terkini sentiasa tersedia diperlukan oleh pelbagai agensi bagi tujuan perancangan dan pembangunan negara\n3) Membantu Mengkaji, merangka dan memantau pelaksanaan aktiviti pembangunan, penyediaan, penyelenggaraan dan dokumentasi infrastruktur rujukan ukur geodetik Bagi memastikan jaringan rujukan datar dan tegak yang menyeluruh dan tepat sentiasa tersedia.\n4) Membantu Mengkaji, merangka dan memantau pelaksanaan aktiviti penandaan, pengukuran, penyelenggaraan dan dokumentasi persempadanan antarabangsa dengan negara berjiran Bagi memastikan kesahihan dan ketepatan jajaran sempadan antarabangsa sentiasa terpelihara.\n5) Membantu Merangka strategi penyebaran dan memberi khidmat nasihat berkaitan dokumen dan maklumat geospatial pemetaan, geodetik dan persempadanan antarabangsa terbitan JUPEM Bagi memastikan agensi kerajaan dan orang awam dapat menggunakan maklumat yang dibekalkan dengan sebaiknya\n6) Membantu Mengurus, memantau dan menyediakan arahan kerja yang berkaitan dengan ICT Berdasarkan empat aspek iaitu infrastruktur dan keselamatan ICT, aplikasi, pembudayaan ICT dan tadbir urus ICT.", peralatan:"-", gambar:"https://i.postimg.cc/hGYkSF47/image.png", menolak_bdr:false},
+{bil:2, nama:"Samsuddin bin Baba", jawatan:"Penolong Pengarah Ukur (J9)", jarak:16.8, emel:"samsuddin@jupem.gov.my", telefon:"019-424 8071", alamat:"A15-09, Lorong 4, Taman Indah Permai, 88400 Kota Kinabalu, sabah", tugas:"1) Menyediakan jadual bulanan kakitangan dan kerja-kerja penerbangan.\n2) Menyemak foto udara yang dihasilkan memenuhi spesifikasi dan kualiti pemetaan.\n3) Menyemak pemprosesan koordinat dedahan kamera mengikut kehendak spesifikasi pemetaan.\n4) Melaksanakan penyelenggaraan kamera udara pada masa-masa yang ditetapkan supaya sentiasa dalam keadaan yang baik.\n5) Menyelaras dan merancang kursus luar atau dalam jabatan bagi memastikan kakitangan sentiasa mempunyai pengetahuan berkaitan perisian dan peralatan yang digunakan\n6) Menyediakan senarai lembar pemetaan Negeri Sabah (Bahagian Sandakan) untuk tujuan agihan kepada kakitangan bagi aktiviti penyediaan dataset geospatial. Menyemak dataset geospatial yang dihasilkan memenuhi spesifikasi dan kualiti pemetaan.\n7) Menyediakan senarai lembar pemetaan Negeri Sabah (Bahagian Sandakan) untuk tujuan agihan kepada kakitangan bagi aktiviti suntingan data geospatial.\n8) Menyemak pangkalan data topografi dan kartografi dan menganalisis keperluan untuk tujuan pengemaskinian data geospatial.\n9) Memastikan kakitangan sentiasa mempunyai pengetahuan berkaitan perisian dan peralatan yang digunakan dengan merancang dan mengadakan kursus luar atau dalam jabatan.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/05XcFGQW/image.png", menolak_bdr:false},
+{bil:3, nama:"Fadzil bin Mohamad", jawatan:"Penolong Juruukur (JA6)", jarak:20, emel:"fadzil.mohamad@jupem.gov.my", telefon:"019-424 8071", alamat:"Lok Kawi Heights, Kinarut", tugas:"1) Meneliti spesifikasi penggambaran UAS dan sediakan perancangan penerbangan berdasarkan keperluan kerja\n2) Melaksanakan permohonan penggunaan ruang udara kepada Pihak Berkuasa Penerbangan Awam Malaysia(CAAM).\n3) Melaksanakan penggambaran udara UAS dan cerapan Ground Control Point(GCP).\n4) Menyemak Data Imej Digital UAS/ LiDAR, Global Navigation Satellite System (GNSS) dan Rajah Indeks Penerbangan.\n5) Menyediakan Laporan Penggambaran udara UAS/ LiDAR. Salinan laporan hendaklah dihantar kepada pihak BDPP\n6) Memuat naik data yang telah disemak ke dalam server\n7) Meneliti arahan kerja kalibrasi alat ukur GNSS dan sediakan perancangan berdasarkan keperluan kerja\n8) Melaksanakan perancangan kerja kalibrasi alat ukur GNSS.\n9) Menyemak hasil pemprosesan data Global Navigation Satellite System(GNSS).\n10) Menyediakan laporan kalibarasi alat ukur GNSS. Salinan diserahkan kepada Cawangan Geodesi BPTSabah dan JUPEM Labuan.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/tRPS8ZKP/image.png", menolak_bdr:false},
+{bil:4, nama:"Frankie Sinteh", jawatan:"Penolong Juruukur (JA6)", jarak:76.8, emel:"frankie.sinteh@jupem.gov.my", telefon:"011-3322 1554", alamat:"PEKAN NABALU, 89257 TAMPARULI", tugas:"1) Meneliti spesifikasi penggambaran UAS dan sediakan perancangan penerbangan berdasarkan keperluan kerja\n2) Melaksanakan permohonan penggunaan ruang udara kepada Pihak Berkuasa Penerbangan Awam Malaysia(CAAM).\n3) Melaksanakan penggambaran udara UAS dan cerapan Ground Control Point(GCP).\n4) Menyemak Data Imej Digital UAS/ LiDAR, Global Navigation Satellite System (GNSS) dan Rajah Indeks Penerbangan.\n5) Menyediakan Laporan Penggambaran udara UAS/ LiDAR. Salinan laporan hendaklah dihantar kepada pihak BDPP\n6) Memuat naik data yang telah disemak ke dalam server\n7) Meneliti arahan kerja kalibrasi alat ukur GNSS dan sediakan perancangan berdasarkan keperluan kerja\n8) Melaksanakan perancangan kerja kalibrasi alat ukur GNSS.\n9) Menyemak hasil pemprosesan data Global Navigation Satellite System(GNSS).\n10) Menyediakan laporan kalibarasi alat ukur GNSS. Salinan diserahkan kepada Cawangan Geodesi BPTSabah dan JUPEM Labuan.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/tRPS8ZKP/image.png", menolak_bdr:false},
+{bil:5, nama:"Larry Joy Linus Tokuzip", jawatan:"Penolong Juruukur (JA5)", jarak:24.8, emel:"larry.joy@jupem.gov.my", telefon:"013-864 6889", alamat:"Kampung Langkuas Kinarut, Papar", tugas:"1) Melaksanakan penggambaran udara UAS dan cerapan Ground Control Point(GCP)\n2) Melaksanakan perancangan kerja kalibrasi alat ukur GNSS\n3) Melaksanakan pemprosesaan data cerapan Global Navigation Satellite System(GNSS)\n4) Menyediakan bahan/input untuk laporan kalibarasi alat ukur GNSS dan diserahkan kepada PJU JA6 untuk Tindakan selanjutnya.\n5) Membantu Merangka strategi penyebaran dan memberi khidmat nasihat berkaitan dokumen dan maklumat geospatial pemetaan, geodetik dan persempadanan antarabangsa terbitan JUPEM Bagi memastikan agensi kerajaan dan orang awam dapat menggunakan maklumat yang dibekalkan dengan sebaiknya\n6) Membantu Membantu Mengurus, memantau dan menyediakan arahan kerja yang berkaitan dengan ICT Berdasarkan empat aspek iaitu infrastruktur dan keselamatan ICT, aplikasi, pembudayaan ICT dan tadbir urus ICT.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/mgJFxw1Z/image.png", menolak_bdr:false},
+{bil:6, nama:"Suandy Bin Suprat", jawatan:"Penolong Juruukur (JA5)", jarak:10, emel:"suandysuprat@jupem.gov.my", telefon:"016-739 8003", alamat:"SH17-3B-1 Apartment Taman Suria Jalan Penampang Lama Penampang", tugas:"1) Melaksanakan penggambaran udara UAS dan cerapan Ground Control Point(GCP)\n2) Melaksanakan perancangan kerja kalibrasi alat ukur GNSS\n3) Melaksanakan pemprosesaan data cerapan Global Navigation Satellite System(GNSS)\n4) Menyediakan bahan/input untuk laporan kalibarasi alat ukur GNSS dan diserahkan kepada PJU JA6 untuk Tindakan selanjutnya.\n5) Membantu Merangka strategi penyebaran dan memberi khidmat nasihat berkaitan dokumen dan maklumat geospatial pemetaan, geodetik dan persempadanan antarabangsa terbitan JUPEM Bagi memastikan agensi kerajaan dan orang awam dapat menggunakan maklumat yang dibekalkan dengan sebaiknya\n6) Membantu Membantu Mengurus, memantau dan menyediakan arahan kerja yang berkaitan dengan ICT Berdasarkan empat aspek iaitu infrastruktur dan keselamatan ICT, aplikasi, pembudayaan ICT dan tadbir urus ICT.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/yYWdVRHr/image.png", menolak_bdr:false},
+{bil:7, nama:"Wilfred @ Firdaus Bin Abdullah", jawatan:"Penolong Juruukur (JA5)", jarak:15.1, emel:"wilfred.danie@jupem.gov.my", telefon:"019-809 0565", alamat:"Lot No. 27, Blok C, Taman Ketiau Fasa 1, Jalan Ketiau Tombovo Putatan 88200 Putatan, Sabah", tugas:"1) Melaksanakan penggambaran udara UAS dan cerapan Ground Control Point(GCP)\n2) Melaksanakan perancangan kerja kalibrasi alat ukur GNSS\n3) Melaksanakan pemprosesaan data cerapan Global Navigation Satellite System(GNSS)\n4) Menyediakan bahan/input untuk laporan kalibarasi alat ukur GNSS dan diserahkan kepada PJU JA6 untuk Tindakan selanjutnya.\n5) Membantu Merangka strategi penyebaran dan memberi khidmat nasihat berkaitan dokumen dan maklumat geospatial pemetaan, geodetik dan persempadanan antarabangsa terbitan JUPEM Bagi memastikan agensi kerajaan dan orang awam dapat menggunakan maklumat yang dibekalkan dengan sebaiknya\n6) Membantu Membantu Mengurus, memantau dan menyediakan arahan kerja yang berkaitan dengan ICT Berdasarkan empat aspek iaitu infrastruktur dan keselamatan ICT, aplikasi, pembudayaan ICT dan tadbir urus ICT.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/bwmfdC9d/image.png", menolak_bdr:false},
+{bil:8, nama:"Alex Basikol", jawatan:"Penolong Juruukur (JA7)", jarak:3.9, emel:"alex@jupem.gov.my", telefon:"013-859 8079", alamat:"Blok A7, Flat Kepayan Ridge", tugas:"1) Mengarahkan bagi menjalankan proses permohonan data foto udara/ ortofoto/ satelit/ imej MMS/ LiDAR/ IFSAR\n2) Memaklumkan proses permohonan data telah selesai.\n3) Menerima arahan dan mengarahkan untuk menjalankan semakan data foto udara/ Ortofoto/ LiDAR dan pengemaskinian Pangkalan Data Imej.\n4) Memaklumkan data fotoudara / ortofoto/LiDAR yang telah dikemaskini.\n5) Mengarahkan bagi menjalankan kemaskini rekod ortofoto/ LiDAR dan permohonan data foto udara/ ortofoto/ satelit/ imej MMS/ LiDAR/ IFSAR dalam Pangkalan Data Imej.\n6) Maklumkan rekod ortofoto/ LiDAR dan permohonan data foto udara/ ortofoto/ satelit/ imej MMS/ LiDAR/ IFSAR dalam Pangkalan Data Imej telah dikemaskini.\n7) Menerima arahan dan mengarahkan untuk mengemaskini Pangkalan Data Imej.\n8) Memaklumkan data fotoudara / ortofoto/LiDAR yang telah dikemaskini", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/Z5nccW4S/image.png", menolak_bdr:false},
+{bil:9, nama:"Sahadon Bin Samsuddin", jawatan:"Penolong Juruukur (JA6)", jarak:38.5, emel:"sahadon@jupem.gov.my", telefon:"013-546 1675", alamat:"D18, Taman Perumahan Papar, Jalan Kuala, Kg. Sungai Padang, 89600 Papar", tugas:"1) Menerima arahan untuk menjalankan pengurusan permohonan data foto udara/ ortofoto/ satelit/ imej MMS/ LiDAR/ IFSAR\n2) Menyemak kesempurnaan data\n3) Jika salinan data menggunakan external hard disk/ DVD, menyediakan memo/ surat kepada Bahagian Perancangan Korporat (BPK)\n4) Jika salinan menggunakan online (web service), menghantar emel kepada Bahagian Perancangan Korporat (BPK) untuk makluman dan tindakan selanjutnya\n5) Menghantar memo/ surat dan salinan external hard disk/ DVD kepada Bahagian Perancangan Korporat (BPK) untuk penghantaran data kepada pemohon\n6) Menyemak (semakan akhir kualiti) data foto udara/ Ortofoto/ LiDAR dalam Pangkalan Data Imej dan mengarahkan penyediaan katalog data dan metadata\n7) Memaklumkan data foto udara/ ortofoto/ LiDAR yang telah dikemaskini di dalam Pangkalan Data Imej\n8) Menyemak ortofoto/ LiDAR dan permohonan data foto udara/ ortofoto/ satelit/ imej MMS/ LiDAR/ IFSAR dalam Pangkalan Data Imej\n9) Menyemak (semakan akhir kualiti) data foto udara/ Ortofoto/ LiDAR dalam Pangkalan Data Imej dan mengarahkan pemindahan imej baharu ke dalam katalog data dan metadata yang telah disediakan\n10) Memaklumkan data foto udara/ ortofoto/ LiDAR yang telah selesai dipindahkan dan dikemaskini di dalam Pangkalan Data Imej.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/QMq9Brnc/image.png", menolak_bdr:true},
+{bil:10, nama:"Abdah Bin Mohd Zain", jawatan:"Penolong Juruukur (JA5)", jarak:10.5, emel:"abdah@jupem.gov.my", telefon:"016-835 0555", alamat:"No 74 Kampung Tebongon Putatan 88200 Kota kinabalu Sabah", tugas:"1) Menjalankan proses permohonan data foto udara/ ortofoto/ satelit/ imej MMS/ LiDAR/ IFSAR.\n2) Menyemak data-data yang dimohon terdapat di Pangkalan Data Imej.\n3) Menjalankan proses menyalin data yang dipohon ke external hard disk/ DVD/ online (Web Service) seperti mana permohonan.\n4) Menjalankan kerja penyediaan katalog foto udara/ Ortofoto/ LiDAR dan metadata.\n5) Menyemak ortofoto/ LiDAR dan permohonan data foto udara/ ortofoto/ satelit/ imej MMS/ LiDAR/ IFSAR dalam Pangkalan Data Imej.\n6) Menjalankan kerja pemindahan Imej ke dalam katalog foto udara/ Ortofoto/ LiDAR dan metadata.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/hP7XLm5t/image.png", menolak_bdr:true},
+{bil:11, nama:"Abdul Fathaa Nasrie Bin Hj Igah", jawatan:"Penolong Juruukur (JA5)", jarak:17.6, emel:"fathaanasrie@jupem.gov.my", telefon:"011-5881 7376", alamat:"NO 29 Fasa 2 Lrg 5, Taman Kuala Menggatal, Jalan Sulaman, 88450 Kota Kinabalu, Sabah", tugas:"1) Menjalankan proses permohonan data foto udara/ ortofoto/ satelit/ imej MMS/ LiDAR/ IFSAR.\n2) Menyemak data-data yang dimohon terdapat di Pangkalan Data Imej.\n3) Menjalankan proses menyalin data yang dipohon ke external hard disk/ DVD/ online (Web Service) seperti mana permohonan.\n4) Menjalankan kerja penyediaan katalog foto udara/ Ortofoto/ LiDAR dan metadata.\n5) Menyemak ortofoto/ LiDAR dan permohonan data foto udara/ ortofoto/ satelit/ imej MMS/ LiDAR/ IFSAR dalam Pangkalan Data Imej.\n6) Menjalankan kerja pemindahan Imej ke dalam katalog foto udara/ Ortofoto/ LiDAR dan metadata.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/DfSrN8Nh/image.png", menolak_bdr:false},
+{bil:12, nama:"Mohd Rafee Bin Jamal", jawatan:"Penolong Juruukur (JA5)", jarak:9.2, emel:"mohdrafee@jupem.gov.my", telefon:"013-553 3845", alamat:"Kg Sindill Putatan. Jalan Putatan. 88200 Putatan Sabah", tugas:"1) Menjalankan proses permohonan data foto udara/ ortofoto/ satelit/ imej MMS/ LiDAR/ IFSAR.\n2) Menyemak data-data yang dimohon terdapat di Pangkalan Data Imej.\n3) Menjalankan proses menyalin data yang dipohon ke external hard disk/ DVD/ online (Web Service) seperti mana permohonan.\n4) Menjalankan kerja penyediaan katalog foto udara/ Ortofoto/ LiDAR dan metadata.\n5) Menyemak ortofoto/ LiDAR dan permohonan data foto udara/ ortofoto/ satelit/ imej MMS/ LiDAR/ IFSAR dalam Pangkalan Data Imej.\n6) Menjalankan kerja pemindahan Imej ke dalam katalog foto udara/ Ortofoto/ LiDAR dan metadata.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/438cLgbJ/image.png", menolak_bdr:false},
+{bil:13, nama:"Aswana Binti Maduni", jawatan:"Penolong Juruukur (JA5)", jarak:29.7, emel:"aswana@jupem.gov.my", telefon:"010-949 0167", alamat:"Kampung Gayang, Tuaran", tugas:"1) Menjalankan proses permohonan data foto udara/ ortofoto/ satelit/ imej MMS/ LiDAR/ IFSAR.\n2) Menyemak data-data yang dimohon terdapat di Pangkalan Data Imej.\n3) Menjalankan proses menyalin data yang dipohon ke external hard disk/ DVD/ online (Web Service) seperti mana permohonan.\n4) Menjalankan kerja penyediaan katalog foto udara/ Ortofoto/ LiDAR dan metadata.\n5) Menyemak ortofoto/ LiDAR dan permohonan data foto udara/ ortofoto/ satelit/ imej MMS/ LiDAR/ IFSAR dalam Pangkalan Data Imej.\n6) Menjalankan kerja pemindahan Imej ke dalam katalog foto udara/ Ortofoto/ LiDAR dan metadata.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/DzzJbNky/image.png", menolak_bdr:false},
+{bil:14, nama:"Nazirah Binti Mohd Noor", jawatan:"Penolong Juruukur (JA5)", jarak:15.4, emel:"nazirah@jupem.gov.my", telefon:"016-815 7245", alamat:"No 25 Lorong 1 Tmn Bukit Damaisari Jln Mansiang Menggatal 88450 Kota Kinabalu Sabah", tugas:"1) Menjalankan proses permohonan data foto udara/ ortofoto/ satelit/ imej MMS/ LiDAR/ IFSAR.\n2) Menyemak data-data yang dimohon terdapat di Pangkalan Data Imej.\n3) Menjalankan proses menyalin data yang dipohon ke external hard disk/ DVD/ online (Web Service) seperti mana permohonan.\n4) Menjalankan kerja penyediaan katalog foto udara/ Ortofoto/ LiDAR dan metadata.\n5) Menyemak ortofoto/ LiDAR dan permohonan data foto udara/ ortofoto/ satelit/ imej MMS/ LiDAR/ IFSAR dalam Pangkalan Data Imej.\n6) Menjalankan kerja pemindahan Imej ke dalam katalog foto udara/ Ortofoto/ LiDAR dan metadata.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/htnyGPjz/image.png", menolak_bdr:true},
+{bil:15, nama:"Adilin Malih", jawatan:"Penolong Juruukur (JA6)", jarak:12.1, emel:"adilin@jupem.gov.my", telefon:"013-872 2953", alamat:"Taman Kasigui, Jalan Penampang Tambunan, Penampang", tugas:"Memantau /menyelia kemajuan kerja Unit DTM dan menyemak kerja-kerja suntingan alur dan Kontur.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/dtKh93P8/image.png", menolak_bdr:false},
+{bil:16, nama:"Richard Bruce Victor", jawatan:"Penolong Juruukur (JA5)", jarak:10, emel:"richardbv@jupem.gov.my", telefon:"016-585 5510", alamat:"Lot 11, Taman Kasigui, Penampang", tugas:"1) Menjalankan kerja-kerja penyegitigaan udara serta penghasilan ortofoto secara mingguan.\n2) Menghasilkan imej dan ortofoto terlaras.\n3)Mengemaskini dan menyediakan laporan kemajuan individu.\n4) Menjalankan kerja-kerja pendigitan / suntingan DTM untuk menghasilkan data hypsography dan hidrografi secara mingguan.\n5) Menghasilkan data hypsography dan hidrografi yang tepat dan sempurna.\n6) Mengemaskini dan menyediakan laporan kemajuan individu.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/yNWxNSc4/image.png", menolak_bdr:false},
+{bil:17, nama:"Jack Mainin", jawatan:"Penolong Juruukur (JA5)", jarak:21, emel:"jackmainin@jupem.gov.my", telefon:"019-802 2270", alamat:"Kg.Timpoluon Penampang", tugas:"1) Menjalankan kerja-kerja penyegitigaan udara serta penghasilan ortofoto secara mingguan.\n2) Menghasilkan imej dan ortofoto terlaras.\n3)Mengemaskini dan menyediakan laporan kemajuan individu.\n4) Menjalankan kerja-kerja pendigitan / suntingan DTM untuk menghasilkan data hypsography dan hidrografi secara mingguan.\n5) Menghasilkan data hypsography dan hidrografi yang tepat dan sempurna.\n6) Mengemaskini dan menyediakan laporan kemajuan individu.", peralatan:"-", gambar:"https://i.postimg.cc/cCGLT9jg/image.png", menolak_bdr:false},
+{bil:18, nama:"Eldie Edwin", jawatan:"Penolong Juruukur (JA5)", jarak:120, emel:"eldie@jupem.gov.my", telefon:"014-848 8211", alamat:"Kampung Poring, Ranau, Sabah", tugas:"1) Menjalankan kerja-kerja penyegitigaan udara serta penghasilan ortofoto secara mingguan.\n2) Menghasilkan imej dan ortofoto terlaras.\n3)Mengemaskini dan menyediakan laporan kemajuan individu.\n4) Menjalankan kerja-kerja pendigitan / suntingan DTM untuk menghasilkan data hypsography dan hidrografi secara mingguan.\n5) Menghasilkan data hypsography dan hidrografi yang tepat dan sempurna.\n6) Mengemaskini dan menyediakan laporan kemajuan individu.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/QCDjcB9q/image.png", menolak_bdr:false},
+{bil:19, nama:"Farid Tasim", jawatan:"Penolong Juruukur (JA5)", jarak:26, emel:"faridtasim@jupem.gov.my", telefon:"016-868 1143", alamat:"FG6, Puncak Gloxinia Condominium, Kinarut Papar", tugas:"1) Menjalankan kerja-kerja penyegitigaan udara serta penghasilan ortofoto secara mingguan.\n2) Menghasilkan imej dan ortofoto terlaras.\n3)Mengemaskini dan menyediakan laporan kemajuan individu.\n4) Menjalankan kerja-kerja pendigitan / suntingan DTM untuk menghasilkan data hypsography dan hidrografi secara mingguan.\n5) Menghasilkan data hypsography dan hidrografi yang tepat dan sempurna.\n6) Mengemaskini dan menyediakan laporan kemajuan individu.", peralatan:"-", gambar:"https://i.postimg.cc/zfhNMX54/image.png", menolak_bdr:false},
+{bil:20, nama:"Wan Hazirah Binti Tarun @ Rasemin", jawatan:"Penolong Juruukur (JA5)", jarak:6.2, emel:"hazirahtarun@jupem.gov.my", telefon:"012-849 7479", alamat:"12-3 Blok D tingkat 3, Taman Chan Yai Lorong Canai 2 Likas Kota Kinabalu Sabah", tugas:"1) Menjalankan kerja-kerja penyegitigaan udara serta penghasilan ortofoto secara mingguan.\n2) Menghasilkan imej dan ortofoto terlaras.\n3)Mengemaskini dan menyediakan laporan kemajuan individu.\n4) Menjalankan kerja-kerja pendigitan / suntingan DTM untuk menghasilkan data hypsography dan hidrografi secara mingguan.\n5) Menghasilkan data hypsography dan hidrografi yang tepat dan sempurna.\n6) Mengemaskini dan menyediakan laporan kemajuan individu.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/T31fjvwk/image.png", menolak_bdr:false},
+{bil:21, nama:"Aidil Saufi", jawatan:"Penolong Juruukur (JA5)", jarak:116, emel:"aidil@jupem.gov.my", telefon:"014-360 2147", alamat:"Kampung Banting, Beaufort", tugas:"1) Menjalankan kerja-kerja penyegitigaan udara serta penghasilan ortofoto secara mingguan.\n2) Menghasilkan imej dan ortofoto terlaras.\n3)Mengemaskini dan menyediakan laporan kemajuan individu.\n4) Menjalankan kerja-kerja pendigitan / suntingan DTM untuk menghasilkan data hypsography dan hidrografi secara mingguan.\n5) Menghasilkan data hypsography dan hidrografi yang tepat dan sempurna.\n6) Mengemaskini dan menyediakan laporan kemajuan individu.", peralatan:"Laptop Jabatan", gambar:"https://i.postimg.cc/YqqHkBQs/image.png", menolak_bdr:false}
+];
+
+/* ===================== TOAST ===================== */
+function showToast(msg, type){
+type = type || 'info';
+const wrap = document.getElementById('toastWrap');
+const ic = type==='ok'?'fa-check-circle':type==='err'?'fa-exclamation-circle':'fa-info-circle';
+const el = document.createElement('div');
+el.className = 'toast-item toast-'+type;
+el.innerHTML = '<i class="fas '+ic+'"></i><span>'+msg+'</span>';
+wrap.appendChild(el);
+setTimeout(function(){ el.style.transition='opacity .3s'; el.style.opacity='0'; setTimeout(function(){ el.remove(); },300); }, 3500);
+}
+
+/* ===================== THEME (segerak dgn portal: myspdTheme) ===================== */
+function applyTheme(theme){
+const light = theme === 'light';
+document.body.classList.toggle('theme-light', light);
+const ic = document.getElementById('themeIcon');
+if(ic) ic.className = light ? 'fas fa-sun' : 'fas fa-moon';
+if(bdrData.length) renderStatsAndChart();
+}
+function toggleTheme(){
+const next = (localStorage.getItem('myspdTheme') || 'dark') === 'light' ? 'dark' : 'light';
+localStorage.setItem('myspdTheme', next);
+applyTheme(next);
+}
+
+/* ===================== AUTH GUARD ===================== */
+async function runAuthGuard(){
+const { data: { session } } = await sb.auth.getSession();
+if(!session){ window.location.href = '/'; return; }
+currentUser = session.user;
+try {
+const { data: prof } = await sb.from('profiles').select('role').eq('id', currentUser.id).single();
+isSuperadmin = !!(prof && prof.role === 'superadmin');
+} catch(e){ isSuperadmin = false; }
+toggleAdminUI();
+document.getElementById('authGuard').style.display = 'none';
+await loadBdr();
+}
+
+function toggleAdminUI(){
+document.querySelectorAll('.admin-only').forEach(function(el){ el.style.display = isSuperadmin ? '' : 'none'; });
+}
+
+/* ===================== LOAD / SEED ===================== */
+async function loadBdr(){
+const { data, error } = await sb.from('bdr').select('*').order('bil', { ascending: true });
+if(error){ showToast('Gagal muat data BDR: '+error.message, 'err'); return; }
+if(!data || data.length === 0){
+if(isSuperadmin && confirm('Tiada rekod BDR dalam pangkalan data. Pindahkan 21 rekod awal sekarang?')){
+await seedBdr();
+return;
+}
+bdrData = [];
+} else {
+bdrData = data;
+}
+renderTable(bdrData);
+renderStatsAndChart();
+}
+
+async function seedBdr(){
+const rows = SEED_DATA.map(function(r){
+return {
+bil: r.bil, nama: r.nama, jawatan: r.jawatan, jarak: r.jarak,
+emel: r.emel, telefon: r.telefon, alamat: r.alamat, tugas: r.tugas,
+peralatan: r.peralatan, gambar: r.gambar, menolak_bdr: !!r.menolak_bdr
+};
+});
+const { error } = await sb.from('bdr').insert(rows);
+if(error){ showToast('Seed gagal: '+error.message, 'err'); return; }
+showToast('21 rekod berjaya dipindahkan', 'ok');
+await loadBdr();
+}
+
+/* ===================== RENDER TABLE ===================== */
+function renderTable(data){
+const tbody = document.getElementById('tableBody');
+tbody.innerHTML = '';
+if(!data || data.length === 0){
+tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Tiada rekod ditemui.</td></tr>';
+return;
+}
+data.forEach(function(row){
+const isLayak = row.jarak > 8;
+const badgeClass = isLayak ? 'badge-premium-success' : 'badge-premium-danger';
+const statusText = isLayak ? '<i class="fas fa-check-circle me-1"></i> Layak' : '<i class="fas fa-times-circle me-1"></i> T. Layak';
+const namaHtml = row.nama + (row.menolak_bdr ? MENOLAK_BADGE : '');
+const tr = document.createElement('tr');
+tr.className = isLayak ? 'layak' : 'tidak';
+tr.style.cursor = 'pointer';
+tr.innerHTML = '<td class="text-center text-muted fw-medium">'+row.bil+'</td>'+
+'<td><strong class="text-white fw-semibold">'+namaHtml+'</strong></td>'+
+'<td class="text-light opacity-75 small">'+row.jawatan+'</td>'+
+'<td class="text-center"><span class="badge '+badgeClass+' rounded-pill px-3 py-2 fw-medium">'+row.jarak+' km</span></td>'+
+'<td class="text-center"><span class="fw-medium '+(isLayak ? 'text-success' : 'text-danger')+' small">'+statusText+'</span></td>';
+tr.addEventListener('click', function(){ showProfile(row); });
+tbody.appendChild(tr);
+});
+}
+
+/* ===================== PROFILE ===================== */
+function showProfile(row){
+currentProfileId = row.id;
+const isLayak = row.jarak > 8;
+const distanceColor = isLayak ? 'var(--success-green)' : 'var(--danger-red)';
+const statusText = isLayak ? 'LAYAK BDR' : 'TIDAK LAYAK BDR';
+const bgClass = isLayak ? 'rgba(16, 185, 129, 0.1)' : 'rgba(244, 63, 94, 0.1)';
+const updatedTxt = row.updated_at ? new Date(row.updated_at).toLocaleString('ms-MY', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : 'Tiada rekod';
+const namaHtml = row.nama + (row.menolak_bdr ? MENOLAK_BADGE : '');
+
+const profileHeaderHTML = row.gambar
+? '<img src="'+row.gambar+'" class="profile-img-header" onerror="this.style.display=\'none\'"> '+namaHtml
+: '<i class="fas fa-user-circle me-2 text-info"></i> '+namaHtml;
+
+document.getElementById('modalNama').innerHTML = profileHeaderHTML;
+
+const modalBody = document.getElementById('modalBody');
+modalBody.innerHTML =
+'<div class="row g-4">'+
+'<div class="col-md-5 pe-md-4 border-end border-secondary border-opacity-25">'+
+'<div class="mb-4">'+
+'<div class="p-3 rounded-4 text-center" style="background: '+bgClass+'; border: 1px solid '+distanceColor+';">'+
+'<span class="info-label mb-1" style="color: '+distanceColor+'">Status Kelayakan Semasa</span>'+
+'<h5 class="fw-bold mb-1" style="color: '+distanceColor+'">'+statusText+'</h5>'+
+'<div class="text-light opacity-75 small">Jarak direkodkan: <strong class="text-white">'+row.jarak+' km</strong></div>'+
+'<div class="text-light opacity-50 mt-2" style="font-size:0.7rem;"><i class="fas fa-clock me-1"></i>Kemaskini: '+updatedTxt+'</div>'+
+'</div>'+
+'</div>'+
+'<div class="mb-3"><span class="info-label"><i class="fas fa-briefcase me-2 text-muted"></i>Jawatan & Gred</span><div class="info-value">'+row.jawatan+'</div></div>'+
+'<div class="mb-3"><span class="info-label"><i class="fas fa-envelope me-2 text-muted"></i>E-mel Rasmi</span><div class="info-value text-info">'+row.emel+'</div></div>'+
+'<div class="mb-3"><span class="info-label"><i class="fas fa-phone-alt me-2 text-muted"></i>No. Telefon</span><div class="info-value">'+row.telefon+'</div></div>'+
+'<div class="mb-3"><span class="info-label"><i class="fas fa-map-marker-alt me-2 text-muted"></i>Alamat Kediaman</span><div class="info-value fs-6 text-light opacity-75 lh-sm">'+row.alamat+'</div></div>'+
+'<div><span class="info-label"><i class="fas fa-laptop me-2 text-muted"></i>Peralatan Jabatan</span><div class="info-value text-warning">'+(row.peralatan || 'Tiada Maklumat')+'</div></div>'+
+'</div>'+
+'<div class="col-md-7 ps-md-4">'+
+'<h6 class="mb-3 fw-semibold text-white d-flex align-items-center"><i class="fas fa-tasks me-2 text-info"></i> Deskripsi Tugas BDR</h6>'+
+'<div class="tugas-box shadow-sm">'+row.tugas+'</div>'+
+'</div>'+
+'</div>';
+
+document.getElementById('btnEditStatus').style.display = isSuperadmin ? '' : 'none';
+profileModalInst.show();
+}
+
+/* ===================== EDIT (superadmin) ===================== */
+function openEditFromProfile(){
+const row = bdrData.find(function(r){ return r.id === currentProfileId; });
+if(!row) return;
+if(profileModalInst) profileModalInst.hide();
+openEdit(row.id);
+}
+
+function openEdit(id){
+const row = bdrData.find(function(r){ return r.id === id; });
+if(!row) return;
+document.getElementById('editId').value = row.id;
+document.getElementById('editNama').value = row.nama;
+document.getElementById('editJarak').value = row.jarak;
+document.getElementById('editMenolak').checked = !!row.menolak_bdr;
+editModalInst.show();
+}
+
+async function saveEdit(){
+const id = Number(document.getElementById('editId').value);
+const oldRow = bdrData.find(function(r){ return r.id === id; });
+const jarak = Number(document.getElementById('editJarak').value) || 0;
+const menolak_bdr = document.getElementById('editMenolak').checked;
+
+const { error } = await sb.from('bdr').update({ jarak: jarak, menolak_bdr: menolak_bdr }).eq('id', id);
+if(error){ showToast('Gagal simpan: '+error.message, 'err'); return; }
+
+// Audit log
+const changes = {};
+if(oldRow && Number(oldRow.jarak) !== jarak) changes.jarak = { dari: oldRow.jarak, ke: jarak };
+if(oldRow && !!oldRow.menolak_bdr !== menolak_bdr) changes.menolak_bdr = { dari: !!oldRow.menolak_bdr, ke: menolak_bdr };
+if(Object.keys(changes).length){
+const r = await sb.rpc('bdr_audit_log', {
+p_action: 'bdr_update',
+p_target: (oldRow && oldRow.emel) || (oldRow && oldRow.nama) || '-',
+p_detail: { nama: oldRow ? oldRow.nama : '', perubahan: changes }
+});
+if(r.error) console.warn('Audit gagal:', r.error.message);
+}
+
+if(editModalInst) editModalInst.hide();
+showToast('Status berjaya dikemaskini', 'ok');
+await loadBdr();
+}
+
+/* ===================== STATS + CHART ===================== */
+function renderStatsAndChart(){
+const totalStaff = bdrData.length;
+const layakBDR = bdrData.filter(function(row){ return row.jarak > 8; }).length;
+const takLayak = totalStaff - layakBDR;
+const menolak = bdrData.filter(function(row){ return row.menolak_bdr; }).length;
+const peratusLayak = totalStaff ? Math.round((layakBDR / totalStaff) * 100) : 0;
+const totalKM = bdrData.reduce(function(sum, row){ return sum + (Number(row.jarak)||0); }, 0);
+const purataKM = totalStaff ? (totalKM / totalStaff).toFixed(1) : 0;
+
+document.getElementById('kad-total').innerText = totalStaff;
+document.getElementById('kad-layak').innerText = layakBDR;
+document.getElementById('kad-tidak').innerText = takLayak;
+document.getElementById('kad-purata').innerText = purataKM;
+document.getElementById('kad-menolak').innerText = menolak;
+
+const isLight = document.body.classList.contains('theme-light');
+const txtColor = (getComputedStyle(document.body).getPropertyValue('--text-main') || '#fff').trim();
+
+const centerTextPlugin = {
+id: 'centerText',
+beforeDraw: function(chart) {
+const ctx = chart.ctx;
+const meta = chart.getDatasetMeta(0);
+if (!meta.data.length) return;
+const centerX = meta.data[0].x;
+const centerY = meta.data[0].y;
+ctx.save();
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+const fontSize = (chart.height / 100).toFixed(2);
+ctx.font = "bold " + fontSize + "em 'Orbitron', sans-serif";
+ctx.fillStyle = txtColor;
+ctx.fillText(peratusLayak + "%", centerX, centerY - 10);
+const subFontSize = (chart.height / 350).toFixed(2);
+ctx.font = "600 " + subFontSize + "em 'Inter', sans-serif";
+ctx.fillStyle = "#06b6d4";
+ctx.fillText("KADAR KELAYAKAN", centerX, centerY + 25);
+ctx.restore();
+}
+};
+
+Chart.defaults.color = isLight ? '#475569' : '#94a3b8';
+Chart.defaults.font.family = "'Inter', sans-serif";
+
+if(chartInst) chartInst.destroy();
+chartInst = new Chart(document.getElementById('pieChart'), {
+type: 'doughnut',
+data: {
+labels: ['Layak BDR', 'Tidak Layak'],
+datasets: [{
+data: [layakBDR, takLayak],
+backgroundColor: ['#10b981', '#f43f5e'],
+borderColor: isLight ? '#ffffff' : '#0f172a',
+borderWidth: 3,
+hoverOffset: 10
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+cutout: '80%',
+animation: { animateScale: true, animateRotate: true, duration: 2000, easing: 'easeOutExpo' },
+plugins: {
+legend: { position: 'bottom', labels: { color: txtColor, font: {size: 13, weight: '500'}, padding: 20, usePointStyle: true, pointStyle: 'circle' } },
+tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.95)', titleColor: '#fff', bodyColor: '#cbd5e1', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, padding: 12, cornerRadius: 8 }
+}
+},
+plugins: [centerTextPlugin]
+});
+}
+
+/* ===================== MUSIC ===================== */
+const music = document.getElementById('bgMusic');
+const icon = document.getElementById('musicIcon');
+const text = document.getElementById('musicText');
+music.volume = 0.3;
+
+function updateBtn(isPlaying) {
+if(isPlaying) {
+icon.className = "fas fa-pause me-2";
+icon.style.color = "var(--danger-red)";
+text.innerText = "Pause BGM";
+} else {
+icon.className = "fas fa-play me-2";
+icon.style.color = "var(--accent-cyan)";
+text.innerText = "Play BGM";
+}
+}
+
+function toggleMusic() {
+if (music.paused) { music.play(); } else { music.pause(); }
+}
+
+music.addEventListener('play', function(){ updateBtn(true); });
+music.addEventListener('pause', function(){ updateBtn(false); });
+
+/* ===================== INIT ===================== */
+window.addEventListener('DOMContentLoaded', function(){
+profileModalInst = new bootstrap.Modal(document.getElementById('profileModal'));
+editModalInst = new bootstrap.Modal(document.getElementById('editModal'));
+
+applyTheme(localStorage.getItem('myspdTheme') || 'dark');
+
+document.getElementById('search').addEventListener('input', function() {
+const term = this.value.toLowerCase();
+const filtered = bdrData.filter(function(r){
+return r.nama.toLowerCase().includes(term) || (r.jawatan||'').toLowerCase().includes(term);
+});
+renderTable(filtered);
+});
+
+runAuthGuard();
+
+setTimeout(function() {
+let promise = music.play();
+if (promise !== undefined) {
+promise.catch(function(){
+updateBtn(false);
+document.body.addEventListener('click', function playOnFirstClick() {
+music.play();
+document.body.removeEventListener('click', playOnFirstClick);
+}, { once: true });
+});
+}
+}, 100);
+});
+
+window.addEventListener('storage', function(e){ if(e.key==='myspdTheme') applyTheme(e.newValue || 'dark'); });
+</script>
+</body>
+</html>

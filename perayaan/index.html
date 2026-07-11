@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arkib Perayaan MySPD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
+        body { font-family: 'Rajdhani', sans-serif; background: #020617; margin: 0; background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); }
+        
+        /* Base Hologram Card */
+        .hologram-card { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(245, 158, 11, 0.3); backdrop-filter: blur(8px); position: relative; overflow: hidden; transition: all 0.3s ease; text-decoration: none; display: flex; align-items: center; gap: 1rem; }
+        .hologram-card:hover { transform: translateY(-5px); }
+        
+        /* Custom Hover Effects ikut jenis perayaan */
+        .card-cny:hover { border-color: #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); background: rgba(40, 20, 20, 0.7); }
+        .card-ramadan:hover { border-color: #10b981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); background: rgba(20, 40, 30, 0.7); }
+        
+        .reveal-node { animation: fadeInUP 0.6s ease-out forwards; }
+        @keyframes fadeInUP { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen p-6 overflow-y-auto">
+    <div class="max-w-5xl mx-auto reveal-node mt-10">
+        
+        <a href="/" class="text-amber-500 hover:text-white font-mono text-xs mb-10 inline-flex items-center gap-2 transition-colors">
+            <i class="fas fa-arrow-left"></i> [ PANGKALAN UTAMA ]
+        </a>
+        
+        <header class="mb-12 border-b border-amber-900/50 pb-6">
+            <h2 class="font-['Orbitron'] text-3xl font-bold text-white mb-2 uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-600">
+                <i class="fas fa-gift mr-3 text-amber-500"></i>Arkib Perayaan
+            </h2>
+            <p class="text-amber-500 font-mono text-xs uppercase italic font-bold">Koleksi E-Kad & Ucapan Seksyen Penawanan Data</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <a href="/perayaan/cny/" class="hologram-card card-cny p-8 rounded-lg">
+                <i class="fas fa-dragon text-red-500 text-4xl w-16 text-center animate-pulse"></i>
+                <div>
+                    <h4 class="font-bold text-xl text-red-400 uppercase tracking-wider">Tahun Baru Cina</h4>
+                    <p class="text-xs text-slate-400 font-mono mt-1">Koleksi E-Kad Gong Xi Fa Cai</p>
+                </div>
+            </a>
+            
+            <a href="/perayaan/ramadan/" class="hologram-card card-ramadan p-8 rounded-lg">
+                <i class="fas fa-moon text-green-500 text-4xl w-16 text-center"></i>
+                <div>
+                    <h4 class="font-bold text-xl text-green-400 uppercase tracking-wider">Ramadan & Syawal</h4>
+                    <p class="text-xs text-slate-400 font-mono mt-1">Koleksi Salam Ramadan & Aidilfitri</p>
+                </div>
+            </a>
+
+        </div>
+
+        <div class="mt-16 text-amber-500/40 font-mono text-[10px] text-center uppercase tracking-widest">
+            System_Log: Menunggu muat naik fail perayaan seterusnya... <span class="animate-pulse">_</span>
+        </div>
+        
+    </div>
+</body>
+</html>
